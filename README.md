@@ -1,6 +1,37 @@
 # LukeHarris-T2A2
-Requirements
-Requirements for this project are divided into two major parts,
+
+````
+LH-T2A2/
+├── src/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── config.py
+│   ├── .flaskenv
+│   ├── .env
+│   ├── .env.example
+│   ├── .gitignore
+│   ├── .venv/                # Virtual environment directory (not tracked by version control)
+│   ├── requirements.txt      # Dependencies for your project
+│   ├── models/               # Database models
+│   │   ├── __init__.py
+│   │   ├── user.py           # User model and schema
+│   │   ├── game.py           # Game model and schema
+│   │   ├── genre.py          # Genre model and schema
+│   │   ├── developer.py      # Developer model and schema
+│   │   ├── session.py        # Session model and schema (with session_participants table)
+│   │   ├── score.py          # Score model and schema
+│   │   └── achievement.py    # Achievement model and schema
+│   ├── controllers/          # Blueprint controllers for routing
+│   │   ├── __init__.py
+│   │   ├── user_controller.py
+│   │   ├── game_controller.py
+│   │   ├── genre_controller.py
+│   │   ├── developer_controller.py
+│   │   ├── session_controller.py
+│   │   ├── score_controller.py
+│   │   └── achievement_controller.py
+└── README.md                 # Project documentation
+````
 
 Code
 Documentation
