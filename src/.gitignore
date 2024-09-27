@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]           # Compiled Python files
+*.pyo               # Optimized Python files
+*.pyd               # Windows DLL files
+
+# Virtual Environment
+.venv/              # Virtual environment directory (common name)
+env/                # Environment directory (alternative name)
+
+# Flask 
+instance/          # Instance folder for Flask applications
+*.db               # Database files
+
+# MySQL
+*.sql              # SQL dump files
+*.sql.gz           # Compressed SQL dump files
+
+# Environment variable files
+.env                # Environment variables (contains sensitive info)
+
+# Pytest cache
+.cache/             # Pytest cache files
+
+# Byte-compiled / optimised files
+*.pyc
+*.pyo
