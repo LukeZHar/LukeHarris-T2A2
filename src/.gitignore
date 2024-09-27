@@ -5,8 +5,8 @@ __pycache__/
 *.pyd               # Windows DLL files
 
 # Virtual Environment
-.venv/              # Virtual environment directory (common name)
-env/                # Environment directory (alternative name)
+.venv              # Virtual environment directory 
+.env              # Environment directory 
 
 # Flask 
 instance/          # Instance folder for Flask applications
