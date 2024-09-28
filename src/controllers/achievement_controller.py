@@ -1,135 +1,126 @@
-from init import db  # Import the database instance for SQLAlchemy
-from models.achievement import Achievement, achievement_schema, achievements_schema  # Import the Achievement model and schemas
-from models.game import Game  # Import the Game model for validation
-from flask import Blueprint, request, jsonify  # Import necessary components from Flask
-from flask_jwt_extended import jwt_required  # JWT helper for authentication
+from flask import Blueprint, request
+from flask_jwt_extended import jwt_required  # To enforce user authentication
+from init import db  # Import the database instance
+from models.achievement import Achievement, achievement_schema, achievements_schema  # Import Achievement model and schemas
 
 # Create a Blueprint for achievement-related routes
-achievement_bp = Blueprint('achievements', __name__, url_prefix='/api/achievements')
+achievement_controller = Blueprint("achievement_controller", __name__)
 
-@achievement_bp.route("/", methods=["POST"])
-@jwt_required()  # Protect this route with JWT authentication
+@achievement_controller.route("/achievements", methods=["POST"])
+@jwt_required()  # Ensure the user is authenticated to create an achievement
 def create_achievement():
     """
-    Create a new achievement for a specific game in the database.
+    Create a new achievement.
 
-    Expects a JSON payload with 'game_id', 'title', and 'description'.
+    Expects:
+        - JSON payload with 'name', 'description', 'user_id', and 'game_id'.
     
-    If successful, returns the created achievement with a 201 status code.
-    Returns a 400 status code if there are validation errors (e.g., game does not exist).
+    Returns:
+        - JSON representation of the newly created achievement.
     """
-    json_data = request.get_json()  # Load the incoming JSON data
+    body = request.json  # Get JSON payload from the request
 
-    # Extract necessary fields from the JSON request
-    game_id = json_data.get("game_id")
-    title = json_data.get("title")
-    description = json_data.get("description")
-
-    # Validate if game_id, title, and description are provided
-    if not game_id or not title:
-        return {"message": "Missing game_id or title."}, 400  # Error if missing fields
-
-    # Check if the associated game exists
-    game = Game.query.get(game_id)
-    if not game:
-        return {"message": "Game not found."}, 404  # Return 404 if the game does not exist
-
-    # Create a new Achievement instance
+    # Create a new achievement instance
     new_achievement = Achievement(
-        game_id=game_id,
-        title=title,
-        description=description
+        name=body.get("name"),  # Name of the achievement
+        description=body.get("description"),  # Description of what the achievement represents
+        user_id=body.get("user_id"),  # User who achieved this
+        game_id=body.get("game_id")  # Game where this achievement can be earned
     )
 
-    # Add the new achievement to the database session
+    # Add the new achievement to the database and commit the changes
     db.session.add(new_achievement)
-    db.session.commit()  # Commit the transaction to save the new achievement
+    db.session.commit()
 
-    return achievement_schema.jsonify(new_achievement), 201  # Return the created achievement as JSON
+    return achievement_schema.jsonify(new_achievement), 201  # Return the created achievement with a 201 status
 
 
-@achievement_bp.route("/", methods=["GET"])
-def get_all_achievements():
+@achievement_controller.route("/achievements", methods=["GET"])
+def get_achievements():
     """
-    Retrieve a list of all achievements in the database.
-
-    Returns a JSON list of all achievements.
-    """
-    achievements = Achievement.query.all()  # Query all achievements from the database
-    return achievements_schema.jsonify(achievements), 200  # Return the achievements as a JSON response
-
-
-@achievement_bp.route("/<int:achievement_id>", methods=["GET"])
-def get_achievement(achievement_id):
-    """
-    Retrieve a single achievement by its ID.
-
-    Args:
-    - achievement_id: The ID of the achievement to retrieve.
+    Retrieve all achievements.
 
     Returns:
-    A JSON representation of the achievement or a 404 error if not found.
+        - JSON list of all achievements in the database.
     """
-    achievement = Achievement.query.get(achievement_id)  # Attempt to retrieve the achievement by ID
-    if achievement:
-        return achievement_schema.jsonify(achievement), 200  # Return the achievement as JSON if found
-    else:
-        return {"message": "Achievement not found."}, 404  # Return 404 if the achievement does not exist
+    achievements = Achievement.query.all()  # Retrieve all achievements from the database
+    return achievements_schema.jsonify(achievements)  # Return the list of achievements
 
 
-@achievement_bp.route("/<int:achievement_id>", methods=["PUT", "PATCH"])
-@jwt_required()  # Protect this route with JWT authentication
-def update_achievement(achievement_id):
+@achievement_controller.route("/achievements/<int:id>", methods=["GET"])
+def get_achievement(id):
     """
-    Update an existing achievement by ID.
+    Retrieve a specific achievement by ID.
 
-    Args:
-    - achievement_id: The ID of the achievement to update.
-
-    Expects a JSON payload with fields to update.
+    Arguments:
+        - id: The ID of the achievement to retrieve.
 
     Returns:
-    The updated achievement as JSON or a 404 error if the achievement is not found.
+        - JSON representation of the achievement if found.
+        - Error message if the achievement is not found.
     """
-    achievement = Achievement.query.get(achievement_id)  # Retrieve the achievement by ID
+    achievement = Achievement.query.get(id)  # Retrieve achievement by ID
+
     if not achievement:
-        return {"message": "Achievement not found."}, 404  # Return 404 if the achievement does not exist
+        return {"message": "Achievement not found"}, 404  # Return error if not found
 
-    # Load the incoming data for updates, allowing for partial updates
-    json_data = request.get_json()
+    return achievement_schema.jsonify(achievement)  # Return the found achievement
 
-    # Update the achievement fields based on the provided data
-    if "title" in json_data:
-        achievement.title = json_data["title"]
-    if "description" in json_data:
-        achievement.description = json_data["description"]
 
-    db.session.commit()  # Commit changes to the database
+@achievement_controller.route("/achievements/<int:id>", methods=["PUT", "PATCH"])
+@jwt_required()  # Ensure the user is authenticated to update an achievement
+def update_achievement(id):
+    """
+    Update an existing achievement's information.
 
-    return achievement_schema.jsonify(achievement), 200  # Return the updated achievement as JSON
+    Arguments:
+        - id: The ID of the achievement to update.
 
-@achievement_bp.route("/<int:achievement_id>", methods=["DELETE"])
-@jwt_required()  # Protect this route with JWT authentication
-def delete_achievement(achievement_id):
+    Expects:
+        - JSON payload with fields to update, such as 'name' or 'description'.
+
+    Returns:
+        - JSON representation of the updated achievement if successful.
+        - Error message if the achievement is not found.
+    """
+    achievement = Achievement.query.get(id)  # Retrieve the achievement by ID
+
+    if not achievement:
+        return {"message": "Achievement not found"}, 404  # Return error if not found
+
+    body = request.json  # Get JSON payload for updates
+
+    # Update fields as necessary
+    if "name" in body:
+        achievement.name = body["name"]
+    if "description" in body:
+        achievement.description = body["description"]
+
+    # Commit changes to the database
+    db.session.commit()
+
+    return achievement_schema.jsonify(achievement)  # Return the updated achievement
+
+
+@achievement_controller.route("/achievements/<int:id>", methods=["DELETE"])
+@jwt_required()  # Ensure the user is authenticated to delete an achievement
+def delete_achievement(id):
     """
     Delete an achievement by its ID.
 
-    Args:
-    - achievement_id: The ID of the achievement to delete.
+    Arguments:
+        - id: The ID of the achievement to delete.
 
     Returns:
-    A success message or a 404 error if the achievement does not exist.
+        - Success message if deleted, or error message if not found.
     """
-    # Attempt to retrieve the achievement from the database using the provided achievement_id
-    achievement = Achievement.query.get(achievement_id)
+    achievement = Achievement.query.get(id)  # Retrieve the achievement by ID
 
-    # Check if the achievement exists
     if not achievement:
-        return {"message": "Achievement not found."}, 404  # Return a 404 error if the achievement does not exist
-    
-    # Delete the achievement from the database
-    db.session.delete(achievement)  # Mark the achievement for deletion
-    db.session.commit()  # Commit the transaction to remove the achievement
+        return {"message": "Achievement not found"}, 404  # Return error if not found
 
-    # Return a success message indicating the deletion was successful
-    return {"message": "Achievement deleted successfully."}, 200  # Return a success message with a 200 status code
+    # Delete the achievement from the database
+    db.session.delete(achievement)
+    db.session.commit()
+
+    return {"message": "Achievement deleted successfully"}, 200  # Return success message

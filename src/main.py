@@ -1,62 +1,87 @@
+import os
 from flask import Flask
-from dotenv import load_dotenv
-from src.init import db, ma, bcrypt, jwt  # Import extensions
-from src.config import Config
-from src.models import User, Game, Genre, Developer, Session, Score, Achievement  # Import models
-from src.controllers.user_controller import user_bp
-from src.controllers.game_controller import game_bp
-from src.controllers.session_controller import session_bp
-from src.controllers.score_controller import score_bp
-from src.controllers.achievement_controller import achievement_bp
-from src.controllers.genre_controller import genre_bp  # Ensure there's a blueprint for genres
-from src.controllers.developer_controller import developer_bp  # Ensure there's a blueprint for developers
+from marshmallow.exceptions import ValidationError
+
+# Import initialised instances of database, Marshmallow, Bcrypt, and JWT
+from init import db, ma, bcrypt, jwt
+
+# Import controllers 
+from controllers.cli_controllers import db_commands
+from controllers.auth_controller import auth
+from controllers.user_controller import user_controller
+from controllers.game_controller import game_controller
+from controllers.genre_controller import genre_controller
+from controllers.developer_controller import developer_controller
+from controllers.session_controller import session_controller
+from controllers.score_controller import score_controller
+from controllers.achievement_controller import achievement_controller
 
 def create_app():
     """
-    Create a Flask application instance.
-
-    This function serves as the central factory function for our Flask app. It loads the configuration from
-    environment variables, initializes extensions, and registers blueprints for different parts of the application.
-
-    Returns:
-        app (Flask): The Flask application instance.
+    Create and configure an instance of the Flask application.
+    This function sets up the necessary configurations, initialises
+    various components, and registers controllers.
     """
-    
-    # Load environment variables from the .env file
-    load_dotenv()
-
-    # Initialize Flask app
+    # Instantiate the Flask application
     app = Flask(__name__)
 
-    # Load configuration settings from the Config class, which sources them from environment variables
-    app.config.from_object(Config)
+    # Prevent JSON keys from being sorted alphabetically in responses
+    app.json.sort_keys = False
 
-    # Initialize Flask extensions with the app instance
+    # Configure the app's secret key from environment variables
+    app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
+
+    # Set the SQLAlchemy database URI, read from environment variables
+    # This defines the database connection string used by SQLAlchemy
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
+    
+    # Initialise SQLAlchemy with the Flask app instance
+    # This sets up the database connection and prepares models
     db.init_app(app)
+    
+    # Initialise Marshmallow for object serialization/deserialization
     ma.init_app(app)
+    
+    # Initialise Bcrypt for secure password hashing
+    # Used for hashing passwords and authenticating users
     bcrypt.init_app(app)
+    
+    # Initialise JWTManager for handling JSON Web Tokens
     jwt.init_app(app)
 
-    # Register blueprints to organize API endpoints by functionality
-    # Each blueprint manages a subset of the application's routes
-    app.register_blueprint(user_bp, url_prefix='/api/users')
-    app.register_blueprint(game_bp, url_prefix='/api/games')
-    app.register_blueprint(session_bp, url_prefix='/api/sessions')
-    app.register_blueprint(score_bp, url_prefix='/api/scores')
-    app.register_blueprint(achievement_bp, url_prefix='/api/achievements')
-    app.register_blueprint(genre_bp, url_prefix='/api/genres')  # Blueprint for genres
-    app.register_blueprint(developer_bp, url_prefix='/api/developers')  # Blueprint for developers
-
-    return app
-
-if __name__ == '__main__':
-    # Create and configure the app
-    app = create_app()
-
-    # Using the application context allows us to safely manipulate the database
-    with app.app_context():
-        # Create all database tables according to model definitions
-        db.create_all()
+    # Define an error handler for Marshmallow's ValidationError
+    # Converts validation errors into JSON responses with status code 400
+    @app.errorhandler(ValidationError)
+    def handle_validation_error(error):
+        return {"validation_error": error.messages}, 400
     
-    # Run the app on the local development server. Debug mode gives detailed error pages and automatic reloads.
-    app.run(debug=True)
+    # Register CLI-related commands with the app
+    # These commands help with database operations via command line
+    app.register_blueprint(db_commands)
+    
+    # Register authentication routes and logic
+    app.register_blueprint(auth)
+
+    # Register user management routes
+    app.register_blueprint(user_controller)
+
+    # Register game management routes
+    app.register_blueprint(game_controller)
+
+    # Register genre management routes
+    app.register_blueprint(genre_controller)
+
+    # Register developer data routes
+    app.register_blueprint(developer_controller)
+
+    # Register session management routes for multiplayer games
+    app.register_blueprint(session_controller)
+
+    # Register score tracking routes
+    app.register_blueprint(score_controller)
+
+    # Register achievement management routes
+    app.register_blueprint(achievement_controller)
+    
+    # Return the configured Flask app 
+    return app

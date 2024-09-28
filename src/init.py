@@ -5,7 +5,20 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 
 # Initialize the extensions
-db = SQLAlchemy()  # SQLAlchemy instance for database management
-ma = Marshmallow()  # Marshmallow instance for data serialisation
-bcrypt = Bcrypt()  # Bcrypt instance for password hashing
-jwt = JWTManager()  # JWTManager instance for token management
+# These are extension instances that will be initialised with the Flask application
+
+# SQLAlchemy instance for database management
+# It provides ORM capabilities to map classes to database tables
+db = SQLAlchemy()
+
+# Marshmallow instance for data serialisation and validation
+# Used to facilitate conversion between complex data types and Python data types
+ma = Marshmallow()
+
+# Bcrypt instance for password hashing
+# Ensures that passwords are stored securely using salted hashes
+bcrypt = Bcrypt()
+
+# JWTManager instance for token management
+# Handles the creation and verification of JSON Web Tokens for authentication
+jwt = JWTManager()

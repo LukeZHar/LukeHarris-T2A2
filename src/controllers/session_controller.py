@@ -1,137 +1,108 @@
-from init import db  # Import the database instance for SQLAlchemy
-from models.session import Session, SessionSchema, session_schema, sessions_schema  # Import the Session model and schemas
-from models.game import Game  # Import the Game model for validation
-from flask import Blueprint, request, jsonify  # Import necessary components from Flask
-from flask_jwt_extended import jwt_required  # JWT helper for authentication
+from flask import Blueprint, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from init import db  # Import the database instance
+from models.session import Session, session_schema, sessions_schema  # Import Session model and schemas
 
 # Create a Blueprint for session-related routes
-session_bp = Blueprint('sessions', __name__, url_prefix='/api/sessions')
+session_controller = Blueprint("session_controller", __name__)
 
-@session_bp.route("/", methods=["POST"])
-@jwt_required()  # Protect this route with JWT authentication
+@session_controller.route("/sessions", methods=["POST"])
+@jwt_required()  # Ensure the user is authenticated to create a session
 def create_session():
     """
-    Create a new game session in the database.
+    Create a new gaming session.
 
-    Expects a JSON payload with 'game_id', 'max_players', and 'start_time'.
-    
-    If successful, returns the created session with a 201 status code.
-    Returns a 400 status code if required fields are missing or validation fails.
+    Expects:
+    - JSON payload with 'start_time', 'game_id', and optionally 'end_time'.
+
+    Returns:
+    - JSON representation of the newly created session.
     """
-    json_data = request.get_json()  # Load the incoming JSON data
+    body = request.json  # Get JSON payload from the request
 
-    # Extract the necessary fields from the JSON request
-    game_id = json_data.get("game_id")
-    max_players = json_data.get("max_players")
+    # Get the current user's ID from the JWT
+    user_id = get_jwt_identity()
 
-    # Check if required fields are provided
-    if not game_id or not max_players:
-        return {"message": "Missing game_id or max_players."}, 400  # Return error if fields are missing
-
-    # Check if the associated game exists
-    game = Game.query.get(game_id)
-    if not game:
-        return {"message": "Game not found."}, 404  # Return 404 if the game does not exist
-
-    # Create a new Session instance
+    # Create a new session instance with the provided data
     new_session = Session(
-        game_id=game_id,
-        start_time=datetime.utcnow(),  # Set the start time to now
-        max_players=max_players
+        start_time=body.get("start_time", None),
+        user_id=user_id,
+        game_id=body.get("game_id", None),
+        end_time=body.get("end_time", None)  # end_time can be optional while creating the session
     )
 
-    # Add the new session to the database and commit changes
+    # Add the new session to the database session and commit
     db.session.add(new_session)
     db.session.commit()
 
-    return session_schema.jsonify(new_session), 201  # Return the created session as JSON
+    return session_schema.jsonify(new_session), 201  # Return the created session with a 201 status
 
 
-@session_bp.route("/", methods=["GET"])
-@jwt_required()  # Protect this route with JWT authentication
+@session_controller.route("/sessions", methods=["GET"])
+@jwt_required()  # Ensure the user is authenticated to retrieve sessions
 def get_sessions():
     """
-    Retrieve a list of all game sessions in the database.
-
-    Returns a JSON list of all sessions.
-    """
-    sessions = Session.query.all()  # Query all session records
-    return sessions_schema.jsonify(sessions), 200  # Return the sessions as a JSON response
-
-
-@session_bp.route("/<int:session_id>", methods=["GET"])
-@jwt_required()  # Protect this route with JWT authentication
-def get_session(session_id):
-    """
-    Retrieve a single session by its ID.
-
-    Args:
-    - session_id: The ID of the session to retrieve.
+    Retrieve all gaming sessions for the authenticated user.
 
     Returns:
-    A JSON representation of the session or a 404 error if not found.
+    - JSON list of sessions tied to the current user.
     """
-    session = Session.query.get(session_id)  # Attempt to retrieve the session by ID
-    if session:
-        return session_schema.jsonify(session), 200  # Return the session as JSON if found
-    else:
-        return {"message": "Session not found."}, 404  # Return 404 if the session does not exist
+    user_id = get_jwt_identity()  # Get the current user's ID from the JWT
+
+    # Query all sessions associated with the current user
+    sessions = Session.query.filter_by(user_id=user_id).all()
+
+    return sessions_schema.jsonify(sessions)  # Return the list of sessions
 
 
-@session_bp.route("/<int:session_id>", methods=["PUT", "PATCH"])
-@jwt_required()  # Protect this route with JWT authentication
-def update_session(session_id):
+@session_controller.route("/sessions/<int:id>", methods=["GET"])
+@jwt_required()  # Ensure the user is authenticated to access this route
+def get_session(id):
     """
-    Update an existing session by ID.
+    Retrieve a specific gaming session by ID.
 
-    Args:
-    - session_id: The ID of the session to update.
-
-    Expects a JSON payload with fields to update (optional).
+    Arguments:
+    - id: The ID of the session to retrieve.
 
     Returns:
-    The updated session as JSON or a 404 error if the session is not found.
+    - JSON representation of the session if found.
+    - Error message if the session is not found or unauthorised.
     """
-    session = Session.query.get(session_id)  # Retrieve the session by ID
+    session = Session.query.get(id)  # Retrieve session by ID
+
     if not session:
-        return {"message": "Session not found."}, 404  # Return 404 if the session does not exist
+        return {"message": "Session not found"}, 404  # Return error if not found
 
-    # Load the incoming data for updates, allowing for partial updates
-    json_data = request.get_json()
+    # Ensure that the authenticated user owns the session
+    if session.user_id != get_jwt_identity():
+        return {"message": "Unauthorised"}, 401
 
-    # Update the session's attributes based on the provided data
-    if "max_players" in json_data:
-        session.max_players = json_data["max_players"]
-    if "end_time" in json_data:
-        session.end_time = json_data["end_time"]  # Update end time if provided
-
-    db.session.commit()  # Commit changes to the database
-
-    return session_schema.jsonify(session), 200  # Return the updated session as JSON
+    return session_schema.jsonify(session)  # Return the found session
 
 
-@session_bp.route("/<int:session_id>", methods=["DELETE"])
-@jwt_required()  # Protect this route with JWT authentication
-def delete_session(session_id):
+@session_controller.route("/sessions/<int:id>", methods=["DELETE"])
+@jwt_required()  # Ensure the user is authenticated to delete a session
+def delete_session(id):
     """
-    Delete a session by its ID.
+    Delete a gaming session by its ID.
 
-    Args:
-    - session_id: The ID of the session to delete.
+    Arguments:
+    - id: The ID of the session to delete.
 
     Returns:
-    A success message or a 404 error if the session does not exist.
+    - Success message if deleted, or error message if not found/unauthorized.
     """
-    # Attempt to retrieve the session from the database using the provided session_id
-    session = Session.query.get(session_id)
+    session = Session.query.get(id)  # Retrieve the session by ID
 
-    # Check if the session exists
     if not session:
-        return {"message": "Session not found."}, 404  # Return a 404 error if the session does not exist
-    
+        return {"message": "Session not found"}, 404  # Return error if not found
+
+    # Ensure that the authenticated user owns the session before deletion
+    if session.user_id != get_jwt_identity():
+        return {"message": "Unauthorised"}, 401
+
     # Delete the session from the database
-    db.session.delete(session)  # Mark the session for deletion
-    db.session.commit()  # Commit the transaction to remove the session
+    db.session.delete(session)
+    db.session.commit()
 
-    # Return a success message indicating the deletion was successful
-    return {"message": "Session deleted successfully"}, 200  # Return a success message with a 200 status code
+    return {"message": "Session deleted successfully"}, 200  # Return success message

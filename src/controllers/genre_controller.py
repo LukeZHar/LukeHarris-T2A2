@@ -1,122 +1,121 @@
-from init import db  # Import the database instance for SQLAlchemy
-from models.genre import Genre, genre_schema, genres_schema  # Import the Genre model and schemas
-from flask import Blueprint, request, jsonify  # Import necessary components from Flask
-from flask_jwt_extended import jwt_required  # JWT helper for authentication
+from flask import Blueprint, request
+from flask_jwt_extended import jwt_required
+from init import db  # Import the database instance
+from models.genre import Genre, genre_schema, genres_schema  # Import Genre model and schemas
 
 # Create a Blueprint for genre-related routes
-genre_bp = Blueprint('genres', __name__, url_prefix='/api/genres')
+genre_controller = Blueprint("genre_controller", __name__)
 
-@genre_bp.route("/", methods=["POST"])
-@jwt_required()  # Protect this route with JWT authentication
+@genre_controller.route("/genres", methods=["POST"])
+@jwt_required()  # Ensure the user is authenticated to create a genre
 def create_genre():
     """
-    Create a new genre in the database.
+    Create a new genre.
 
-    Expects a JSON payload with 'name'.
+    Expects:
+    - JSON payload with 'name'.
     
-    If successful, returns the created genre with a 201 status code.
-    Returns a 400 status code if there are validation errors.
+    Returns:
+    - JSON representation of the newly created genre.
     """
-    # Load the incoming JSON data from the request
-    json_data = request.get_json()
-    
-    # Extract the genre name from the JSON request
-    name = json_data.get("name")
+    body = request.json  # Get JSON payload from the request
 
-    # Validate that the name is provided
-    if not name:
-        return {"message": "Missing genre name."}, 400  # Return 400 if no name is provided
+    # Create a new genre instance
+    new_genre = Genre(
+        name=body.get("name")  # The name of the genre
+    )
 
-    # Check for the existence of an existing genre with the same name
-    if Genre.query.filter_by(name=name).first():
-        return {"message": "Genre already exists."}, 400  # Conflict if genre already exists
-
-    # Create a new Genre instance
-    new_genre = Genre(name=name)
-
-    # Add the new genre to the database session
+    # Add the new genre to the database and commit the changes
     db.session.add(new_genre)
-    db.session.commit()  # Commit the transaction to save the new genre
+    db.session.commit()
 
-    return genre_schema.jsonify(new_genre), 201  # Return the created genre as JSON
+    return genre_schema.jsonify(new_genre), 201  # Return the created genre with a 201 status
 
 
-@genre_bp.route("/", methods=["GET"])
-def get_all_genres():
+@genre_controller.route("/genres", methods=["GET"])
+def get_genres():
     """
-    Retrieve a list of all genres in the database.
-
-    Returns a JSON list of all genres.
-    """
-    genres = Genre.query.all()  # Query all genres from the database
-    return genres_schema.jsonify(genres), 200  # Return the genres as a JSON response
-
-
-@genre_bp.route("/<int:genre_id>", methods=["GET"])
-def get_genre(genre_id):
-    """
-    Retrieve a single genre by its ID.
-
-    Args:
-    - genre_id: The ID of the genre to retrieve.
+    Retrieve all genres.
 
     Returns:
-    A JSON representation of the genre or a 404 error if not found.
+    - JSON list of all genres in the database.
     """
-    genre = Genre.query.get(genre_id)  # Attempt to retrieve the genre by ID
-    if genre:
-        return genre_schema.jsonify(genre), 200  # Return the genre as JSON if found
-    else:
-        return {"message": "Genre not found."}, 404  # Return 404 if the genre does not exist
+    genres = Genre.query.all()  # Retrieve all genres
+    return genres_schema.jsonify(genres)  # Return the list of genres
 
 
-@genre_bp.route("/<int:genre_id>", methods=["PUT", "PATCH"])
-@jwt_required()  # Protect this route with JWT authentication
-def update_genre(genre_id):
+@genre_controller.route("/genres/<int:id>", methods=["GET"])
+def get_genre(id):
+    """
+    Retrieve a specific genre by ID.
+
+    Arguments:
+    - id: The ID of the genre to retrieve.
+
+    Returns:
+    - JSON representation of the genre if found.
+    - Error message if the genre is not found.
+    """
+    genre = Genre.query.get(id)  # Retrieve genre by ID
+    
+    if not genre:
+        return {"message": "Genre not found"}, 404  # Return error if not found
+
+    return genre_schema.jsonify(genre)  # Return the found genre
+
+
+@genre_controller.route("/genres/<int:id>", methods=["PUT", "PATCH"])
+@jwt_required()  # Ensure the user is authenticated to update a genre
+def update_genre(id):
     """
     Update an existing genre by ID.
 
-    Args:
-    - genre_id: The ID of the genre to update.
+    Arguments:
+    - id: The ID of the genre to update.
 
-    Expects a JSON payload with fields to update.
+    Expects:
+    - JSON payload with 'name' to update.
 
     Returns:
-    The updated genre as JSON or a 404 error if the genre is not found.
+    - JSON representation of the updated genre if successful.
+    - Error message if genre not found.
     """
-    genre = Genre.query.get(genre_id)  # Retrieve the genre by ID
+    genre = Genre.query.get(id)  # Retrieve the genre by ID
+
     if not genre:
-        return {"message": "Genre not found."}, 404  # Return 404 if the genre does not exist
+        return {"message": "Genre not found"}, 404  # Return error if not found
 
-    # Load the incoming data for updates, allowing for partial updates
-    body = request.get_json()
+    body = request.json  # Get JSON payload for updates
 
+    # Update the name of the genre if provided
     if "name" in body:
-        genre.name = body["name"]  # Update the genre name
+        genre.name = body["name"]
 
-    db.session.commit()  # Commit changes to the database
+    # Commit changes to the database
+    db.session.commit()
 
-    return genre_schema.jsonify(genre), 200  # Return the updated genre as JSON
+    return genre_schema.jsonify(genre)  # Return updated genre
 
 
-@genre_bp.route("/<int:genre_id>", methods=["DELETE"])
-@jwt_required()  # Protect this route with JWT authentication
-def delete_genre(genre_id):
+@genre_controller.route("/genres/<int:id>", methods=["DELETE"])
+@jwt_required()  # Ensure the user is authenticated to delete a genre
+def delete_genre(id):
     """
     Delete a genre by its ID.
 
-    Args:
-    - genre_id: The ID of the genre to delete.
+    Arguments:
+    - id: The ID of the genre to delete.
 
     Returns:
-    A success message or a 404 error if the genre does not exist.
+    - Success message if deleted, or error message if not found.
     """
-    genre = Genre.query.get(genre_id)  # Attempt to retrieve the genre by ID
+    genre = Genre.query.get(id)  # Retrieve the genre by ID
+
     if not genre:
-        return {"message": "Genre not found."}, 404  # Return a 404 error if genre not found
-    
+        return {"message": "Genre not found"}, 404  # Return error if not found
+
     # Delete the genre from the database
     db.session.delete(genre)
-    db.session.commit()  # Commit the transaction
+    db.session.commit()
 
-    return {"message": "Genre deleted successfully"}, 200
+    return {"message": "Genre deleted successfully"}, 200  # Return success message

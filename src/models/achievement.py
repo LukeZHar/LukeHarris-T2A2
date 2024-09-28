@@ -1,62 +1,49 @@
-from src.init import db, ma  # Import database (SQLAlchemy) and marshmallow instances for ORM and serialisation
-from marshmallow import fields  # Import fields for defining schema attributes
-from marshmallow.validate import Length  # Import Length validator for string lengths
+from init import db, ma
+from marshmallow import fields
 
 class Achievement(db.Model):
     """
     This class represents the Achievement model in the database.
 
     Attributes:
-    - id: Primary key for the achievement.
-    - game_id: Foreign key linking to the Game associated with the achievement.
-    - title: The title or name of the achievement.
-    - description: A description of what is required to achieve this achievement.
-    - date_awarded: The date the achievement was awarded (optional).
+    - id: The primary key of the achievement.
+    - name: The name of the achievement, which should be unique and not null.
+    - description: A brief description of the achievement.
+    - user_id: Foreign key linking to the User who earned the achievement.
+    - game_id: Foreign key linking to the Game where the achievement can be earned.
     """
-    __tablename__ = 'achievements'  # Define the database table name
+    __tablename__ = "achievements"  # Specifies the table name in the database
 
-    # Primary key for uniquely identifying each achievement
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each achievement
+    name = db.Column(db.String(150), nullable=False, unique=True)  # Achievement name, unique and non-null
+    description = db.Column(db.String(255), nullable=False)  # Description of what the achievement represents
+
+    # Establishing foreign key relationships
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Foreign key to User
+    game_id = db.Column(db.Integer, db.ForeignKey('games.id'), nullable=False)  # Foreign key to Game
+
+    # Defining relationships
+    user = db.relationship("User", back_populates="achievements")  # Relationship with User model
+    game = db.relationship("Game", back_populates="achievements")  # Relationship with Game model
+
+
+class AchievementSchema(ma.Schema):
+    """
+    Schema for serialising and deserialising Achievement objects.
     
-    # Foreign key linking to the Game model
-    game_id = db.Column(db.Integer, db.ForeignKey('games.id'), nullable=False)
-
-    # The title of the achievement
-    title = db.Column(db.String(100), nullable=False)
+    Includes nested relationships for associated user and game.
+    """
     
-    # Description providing details about the achievement
-    description = db.Column(db.Text, nullable=True)
+    # Nested fields to include related user and game, avoiding recursive serialisation
+    user = fields.Nested("UserSchema", exclude=["achievements", "password"])
+    game = fields.Nested("GameSchema", exclude=["achievements"])
 
-    # Optional date indicating when the achievement was awarded
-    date_awarded = db.Column(db.DateTime, nullable=True)
-
-    # Relationship to associate this achievement with a specific game
-    game = db.relationship('Game', back_populates='achievements')  # Back-reference to the Game model
-
-    def __repr__(self):
-        """Provide a string representation of the Achievement instance for debugging."""
-        return f'<Achievement {self.title} for Game ID {self.game_id}>'
-
-class AchievementSchema(ma.SQLAlchemySchema):
-    """
-    Marshmallow schema for the Achievement model, used for serialization and deserialization.
-
-    This schema helps to validate and format the output and input data for achievements.
-    """
     class Meta:
-        model = Achievement  # Link the schema to the Achievement model
-        load_instance = True  # Deserialize and load instances of the model
+        """
+        Meta class defining which fields are included in serialisation.
+        """
+        fields = ("id", "name", "description", "user", "game")  # Fields to include in serialisation
 
-    # Automatically map model fields to schema fields
-    id = ma.auto_field()
-    game_id = ma.auto_field()
-    title = ma.auto_field(validate=Length(min=1))  # Ensure title is a non-empty string
-    description = ma.auto_field()
-    date_awarded = ma.auto_field()  # Optionally include date_awarded for when achievements are earned
-
-    # Optionally, we can include the game information nested when serialising achievements
-    game = fields.Nested("GameSchema", only=["id", "name"])
-
-# Instantiate schemas for single and multiple achievements
-achievement_schema = AchievementSchema()
-achievements_schema = AchievementSchema(many=True)
+# Instances of AchievementSchema for serialising single and multiple achievement records
+achievement_schema = AchievementSchema()  # Single achievement instance
+achievements_schema = AchievementSchema(many=True)  # Multiple achievements instance

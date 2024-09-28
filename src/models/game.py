@@ -1,65 +1,49 @@
-from src.init import db, ma  # Import database and marshmallow instances
-from marshmallow import fields  # Import fields for Marshmallow schema
-from datetime import datetime  # Import datetime for handling date fields
+from init import db, ma
+from marshmallow import fields
 
 class Game(db.Model):
     """
     This class represents the Game model in the database.
 
     Attributes:
-    - id: Primary key for the game.
-    - name: Name of the game, must be unique.
-    - description: A brief description of the game.
-    - release_date: The official release date of the game.
-    - genre_id: Foreign key linking to the Genre table.
-    - developer_id: Foreign key linking to the Developer table.
+    - id: The primary key of the game.
+    - title: The title of the game, which should be unique and not null.
+    - genre_id: Foreign key linking to the Genre of the game.
+    - developer_id: Foreign key linking to the Developer of the game.
     """
-    __tablename__ = 'games'
+    __tablename__ = "games"  # Specifies the table name in the database
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    release_date = db.Column(db.Date, nullable=True)
-    genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'), nullable=False)
-    developer_id = db.Column(db.Integer, db.ForeignKey('developers.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each game
+    title = db.Column(db.String(150), nullable=False, unique=True)  # Game title, unique and non-null
+    genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'), nullable=False)  # Foreign key to Genre
+    developer_id = db.Column(db.Integer, db.ForeignKey('developers.id'), nullable=False)  # Foreign key to Developer
 
-    # Relationships
-    genre = db.relationship('Genre', back_populates='games')
-    developer = db.relationship('Developer', back_populates='games')
-    sessions = db.relationship('Session', back_populates='game', lazy='dynamic')
-    achievements = db.relationship('Achievement', back_populates='game', lazy='dynamic')
+    # Establishing relationships with related models
+    genre = db.relationship("Genre", back_populates="games")  # Relationship with the Genre model
+    developer = db.relationship("Developer", back_populates="games")  # Relationship with the Developer model
+    scores = db.relationship("Score", back_populates="game", lazy='dynamic')  # Scores achieved in this game
+    sessions = db.relationship("Session", back_populates="game", lazy='dynamic')  # Sessions related to this game
 
-    def __repr__(self):
-        """Provide a string representation of this Game instance, useful for debugging."""
-        return f'<Game {self.name}>'
 
-class GameSchema(ma.SQLAlchemySchema):
+class GameSchema(ma.Schema):
     """
-    Marshmallow schema for the Game model, used for serializing and deserializing Game objects.
-
-    Fields:
-    - id
-    - name
-    - description
-    - release_date
-    - genre: Nested schema for genre information.
-    - developer: Nested schema for developer information.
+    Schema for serialising and deserialising Game objects.
+    
+    Includes nested relationships for user-friendly data responses.
     """
-    class Meta:
-        model = Game  # References the SQLAlchemy model
-        load_instance = True  # Deserialize to model instances
-
-    id = ma.auto_field()
-    name = ma.auto_field()
-    description = ma.auto_field()
-    release_date = ma.auto_field()
-
-    # Nested relationships to ensure complete serialization
+    
+    # Nested fields for related genre, developer, scores, and sessions, while avoiding recursive data exposure
     genre = fields.Nested("GenreSchema", exclude=["games"])
     developer = fields.Nested("DeveloperSchema", exclude=["games"])
+    scores = fields.List(fields.Nested("ScoreSchema", exclude=["game"]))
     sessions = fields.List(fields.Nested("SessionSchema", exclude=["game"]))
-    achievements = fields.List(fields.Nested("AchievementSchema", exclude=["game"]))
 
-# Schema instances for single and multiple game instances
-game_schema = GameSchema()
-games_schema = GameSchema(many=True)
+    class Meta:
+        """
+        Meta class defining which fields are included in serialisation.
+        """
+        fields = ("id", "title", "genre", "developer", "scores", "sessions")
+
+# Instances of GameSchema for serialising single and multiple game entries
+game_schema = GameSchema()  # Single game instance
+games_schema = GameSchema(many=True)  # Multiple games instance

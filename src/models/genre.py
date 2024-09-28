@@ -1,46 +1,41 @@
-from src import db, ma  # Import the SQLAlchemy database instance and Marshmallow for serialisation
-from marshmallow import fields  # Import fields module from Marshmallow for schema definition
+from init import db, ma
+from marshmallow import fields
 
 class Genre(db.Model):
     """
     This class represents the Genre model in the database.
 
     Attributes:
-    - id: Primary key for the genre.
-    - name: The name of the genre, must be unique to prevent duplicates.
-    - games: Relationship field to retrieve all games that fall under this genre.
+    - id: The primary key of the genre.
+    - name: The name of the genre, which should be unique and not null.
+    - description: A brief description of the genre.
     """
-    __tablename__ = 'genres'  # Define the name of the table in the database
+    __tablename__ = "genres"  # Specifies the table name in the database
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Primary key
-    name = db.Column(db.String(50), unique=True, nullable=False)  # Genre name, unique and non-nullable
+    id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each genre
+    name = db.Column(db.String(80), nullable=False, unique=True)  # Genre name, unique and non-null
+    description = db.Column(db.String(255))  # Optional description of the genre
 
-    # Relationship to link genres back to their associated games
-    games = db.relationship('Game', back_populates='genre', lazy='dynamic')
+    # Relationship to associate games with this genre
+    games = db.relationship("Game", back_populates="genre", lazy='dynamic')  # Games that belong to this genre
 
-    def __repr__(self):
-        """Provide a string representation for the Genre instance for debugging."""
-        return f'<Genre {self.name}>'
 
-class GenreSchema(ma.SQLAlchemySchema):
+class GenreSchema(ma.Schema):
     """
-    Marshmallow schema for the Genre model for serialisation and deserialisation.
-
-    Fields:
-    - id
-    - name
-    - games: Includes a list of games associated with this genre.
+    Schema for serialising and deserialising Genre objects.
+    
+    This schema includes nested relationships for associated games.
     """
-    class Meta:
-        model = Genre  # Specifies the database model associated with this schema
-        load_instance = True  # Deserialises directly to JWT model instances
-
-    id = ma.auto_field()  # Automatically map the ID field
-    name = ma.auto_field()  # Automatically map the genre name field
-
-    # Use nested fields to include associated games in the serialisation, if needed
+    
+    # Excludes certain sensitive fields in nested representations to prevent recursive data exposure
     games = fields.List(fields.Nested("GameSchema", exclude=["genre"]))
 
-# Create schema instances for use in your application to handle single and multiple genre objects
-genre_schema = GenreSchema()
-genres_schema = GenreSchema(many=True)
+    class Meta:
+        """
+        Meta class defining which fields are included in serialisation.
+        """
+        fields = ("id", "name", "description", "games")  # Fields to include in serialisation
+
+# Instances of GenreSchema for serialising single and multiple genre records
+genre_schema = GenreSchema()  # Single genre instance
+genres_schema = GenreSchema(many=True)  # Multiple genres instance

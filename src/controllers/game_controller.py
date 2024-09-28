@@ -1,142 +1,144 @@
-from init import db  # Import the database instance for SQLAlchemy
-from models.game import Game, game_schema, games_schema  # Import the Game model and schema
-from flask import Blueprint, request, jsonify  # Import necessary components from Flask
-from flask_jwt_extended import jwt_required  # JWT authentication helper
+from flask import Blueprint, request
+from flask_jwt_extended import jwt_required  # To enforce user authentication
+from init import db  # Import the database instance
+from models.game import Game, game_schema, games_schema  # Import Game model and schemas
+from models.genre import Genre  # Import Genre model to validate genre ID
+from models.developer import Developer  # Import Developer model to validate developer ID
 
 # Create a Blueprint for game-related routes
-game_bp = Blueprint('games', __name__, url_prefix='/api/games')
+game_controller = Blueprint("game_controller", __name__)
 
-@game_bp.route("/", methods=["POST"])
-@jwt_required()  # Protect this route with JWT authentication
+@game_controller.route("/games", methods=["POST"])
+@jwt_required()  # Ensure the user is authenticated to create a game
 def create_game():
     """
-    Create a new game in the database.
+    Create a new game.
 
-    Expects a JSON payload with 'name', 'description', 'release_date', 'genre_id', and 'developer_id'.
-
-    If successful, returns the created game with a 201 status code.
-    Returns a 400 status code if there are validation errors.
-    """
-    # Load the incoming JSON data
-    json_data = request.get_json()
+    Expects:
+        - JSON payload with 'title', 'genre_id', and 'developer_id'.
     
-    # Extract data from JSON request
-    name = json_data.get("name")
-    description = json_data.get("description")
-    release_date = json_data.get("release_date")
-    genre_id = json_data.get("genre_id")
-    developer_id = json_data.get("developer_id")
+    Returns:
+        - JSON representation of the newly created game.
+        - Error message if genre or developer does not exist.
+    """
+    body = request.json  # Get JSON payload from the request
 
-    # Validate that all required fields are provided
-    if not name or not genre_id or not developer_id:
-        return {"message": "Missing required fields: name, genre_id, and developer_id."}, 400
+    # Validate existence of genre and developer
+    genre_id = body.get("genre_id")
+    developer_id = body.get("developer_id")
 
-    # Create a new Game instance
+    # Check if the provided genre_id exists
+    genre = Genre.query.get(genre_id)
+    if not genre:
+        return {"message": "Genre not found"}, 404
+
+    # Check if the provided developer_id exists
+    developer = Developer.query.get(developer_id)
+    if not developer:
+        return {"message": "Developer not found"}, 404
+
+    # Create a new game instance
     new_game = Game(
-        name=name,
-        description=description,
-        release_date=release_date,
-        genre_id=genre_id,
-        developer_id=developer_id
+        title=body.get("title"),  # The title of the game
+        genre_id=genre_id,  # Associate with the verified genre
+        developer_id=developer_id  # Associate with the verified developer
     )
 
-    # Add the new game to the session and commit the transaction
+    # Add the new game to the database and commit the changes
     db.session.add(new_game)
     db.session.commit()
 
-    return game_schema.jsonify(new_game), 201  # Return the created game as JSON
+    return game_schema.jsonify(new_game), 201  # Return the created game with a 201 status
 
 
-@game_bp.route("/", methods=["GET"])
-@jwt_required()  # Protect this route with JWT authentication
-def get_all_games():
+@game_controller.route("/games", methods=["GET"])
+def get_games():
     """
-    Retrieve a list of all games in the database.
-
-    Returns a JSON list of all games.
-    """
-    games = Game.query.all()  # Query all games from the database
-    return games_schema.jsonify(games), 200  # Return the games as a JSON response
-
-
-@game_bp.route("/<int:game_id>", methods=["GET"])
-@jwt_required()  # Protect this route with JWT authentication
-def get_game(game_id):
-    """
-    Retrieve a single game by its ID.
-
-    Args:
-    - game_id: The ID of the game to retrieve.
+    Retrieve all games.
 
     Returns:
-    A JSON representation of the game or a 404 error if not found.
+        - JSON list of all games in the database.
     """
-    game = Game.query.get(game_id)  # Attempt to retrieve the game by ID
-    if game:
-        return game_schema.jsonify(game), 200  # Return the game as JSON if found
-    else:
-        return {"message": "Game not found."}, 404  # Return 404 if the game does not exist
+    games = Game.query.all()  # Retrieve all games from the database
+    return games_schema.jsonify(games)  # Return the list of games
 
 
-@game_bp.route("/<int:game_id>", methods=["PUT", "PATCH"])
-@jwt_required()  # Protect this route with JWT authentication
-def update_game(game_id):
+@game_controller.route("/games/<int:id>", methods=["GET"])
+def get_game(id):
     """
-    Update an existing game by ID.
+    Retrieve a specific game by ID.
 
-    Args:
-    - game_id: The ID of the game to update.
-
-    Expects a JSON payload with fields to update (optional).
+    Arguments:
+        - id: The ID of the game to retrieve.
 
     Returns:
-    The updated game as JSON or a 404 error if the game is not found.
+        - JSON representation of the game if found.
+        - Error message if the game is not found.
     """
-    game = Game.query.get(game_id)  # Retrieve the game by ID
+    game = Game.query.get(id)  # Retrieve game by ID
+
     if not game:
-        return {"message": "Game not found."}, 404  # Return 404 if the game does not exist
+        return {"message": "Game not found"}, 404  # Return error if not found
 
-    # Load the incoming data for updates, allowing for partial updates
-    json_data = request.get_json()
+    return game_schema.jsonify(game)  # Return the found game
 
-    # Update the game attributes based on the provided data
-    if "name" in json_data:
-        game.name = json_data["name"]
-    if "description" in json_data:
-        game.description = json_data["description"]
-    if "release_date" in json_data:
-        game.release_date = json_data["release_date"]
-    if "genre_id" in json_data:
-        game.genre_id = json_data["genre_id"]
-    if "developer_id" in json_data:
-        game.developer_id = json_data["developer_id"]
 
-    db.session.commit()  # Commit changes to the database
+@game_controller.route("/games/<int:id>", methods=["PUT", "PATCH"])
+@jwt_required()  # Ensure the user is authenticated to update a game
+def update_game(id):
+    """
+    Update an existing game's information.
 
-    return game_schema.jsonify(game), 200  # Return the updated game as JSON
+    Arguments:
+        - id: The ID of the game to update.
 
-@game_bp.route("/<int:game_id>", methods=["DELETE"])
-@jwt_required()  # Protect this route with JWT authentication
-def delete_game(game_id):
+    Expects:
+        - JSON payload with fields to update such as 'title', 'genre_id', or 'developer_id'.
+
+    Returns:
+        - JSON representation of the updated game if successful.
+        - Error message if game is not found.
+    """
+    game = Game.query.get(id)  # Retrieve the game by ID
+
+    if not game:
+        return {"message": "Game not found"}, 404  # Return error if the game does not exist
+
+    body = request.json  # Get JSON payload for updates
+
+    # Update fields based on the provided data in the request body
+    if "title" in body:
+        game.title = body["title"]  # Update the title of the game
+    if "genre_id" in body:
+        game.genre_id = body["genre_id"]  # Update the genre ID
+    if "developer_id" in body:
+        game.developer_id = body["developer_id"]  # Update the developer ID
+
+    # Commit changes to the database
+    db.session.commit()
+
+    return game_schema.jsonify(game)  # Return the updated game
+
+
+@game_controller.route("/games/<int:id>", methods=["DELETE"])
+@jwt_required()  # Ensure the user is authenticated to delete a game
+def delete_game(id):
     """
     Delete a game by its ID.
 
-    Args:
-    - game_id: The ID of the game to delete.
+    Arguments:
+        - id: The ID of the game to delete.
 
     Returns:
-    A success message or a 404 error if the game does not exist.
+        - Success message if deleted, or error message if not found.
     """
-    # Attempt to retrieve the game from the database using the provided game_id
-    game = Game.query.get(game_id)
-    
-    # Check if the game exists
-    if not game:
-        return {"message": "Game not found."}, 404  # Return a 404 error if the game does not exist
-    
-    # Delete the game from the database
-    db.session.delete(game)  # Mark the game for deletion
-    db.session.commit()  # Commit the transaction to remove the game
+    game = Game.query.get(id)  # Retrieve the game by ID
 
-    # Return a success message confirming the deletion
-    return {"message": "Game deleted successfully"}, 200  # Return a success message with a 200 status
+    if not game:
+        return {"message": "Game not found"}, 404  # Return error if the game does not exist
+
+    # Delete the game from the database
+    db.session.delete(game)
+    db.session.commit()
+
+    return {"message": "Game deleted successfully"}, 200  # Return success message
