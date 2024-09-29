@@ -2,10 +2,6 @@
 
 ## R1
 - Explain the problem that this app will solve, and explain how this app solves or addresses the problem.
-- CMP1001-6.2: JUSTIFIES the purpose and goal of the developed application.
-6 to >5 pts
-HD
-Provides a DETAILED explanation about the problem being solved by the developed application AND about how the app addresses the problem, and DOES use any objective references or statistics to support their answer.
 
 ### Problem Statement
 Gamers expect a seamless and engaging experience while tracking their progress, achievements, and gameplay. However, many games lack an integrated system that facilitates managing user accounts, gaming sessions, achievements, leaderboards, and other critical elements. This can lead to several issues:
@@ -36,10 +32,6 @@ By implementing this API, a development team can create games that not only enga
 
 ## R2
 - Describe the way tasks are allocated and tracked in your project.
-- CMP1001-2.3: DESCRIBES the way tasks are planned and tracked in the project.
-6 to >5 pts
-HD
-Meets D, and includes proof of THOROUGH usage of specific task management tools THROUGH THE LENGTH OF THE PROJECT.
 
 ### Trello Implementation
 
@@ -66,10 +58,6 @@ Each task card details:
 
 ## R3
 - List and explain the third-party services, packages and dependencies used in this app.
-- CMP1001-1.2: DESCRIBES the third party services, packages or dependencies that are used in the developed application.
-6 to >5 pts
-HD
-The description provided is DETAILED, and the description details ALL of the services, packages or dependencies that are used in the developed application.
 
 ## Third-Party Services, Packages, and Dependencies
 
@@ -109,10 +97,6 @@ My **Game Management API** uses a few third-party services and packages to provi
 
 ## R4
 - Explain the benefits and drawbacks of this app’s underlying database system.
-- CMP1001-2.4: IDENTIFY AND DESCRIBE the benefits and drawbacks of a chosen database system.
-6 to >5 pts
-HD
-Meets D, and describes benefits AND drawbacks to a thorough level of detail.
 
 ## Benefits and Drawbacks of PostgreSQL
 ### Benefits of PostgreSQL
@@ -148,10 +132,6 @@ Meets D, and describes benefits AND drawbacks to a thorough level of detail.
 
 ## R5
 - Explain the features, purpose and functionalities of the object-relational mapping system (ORM) used in this app.
-- CMP1001-1.3: EXPLAINS the features and functionalities of an object-relational mapping (ORM) system
-6 to >5 pts
-HD
-Explains MULTIPLE features or functionalities of an ORM to a THOROUGH level of detail, supporting the explanation with AT LEAST ONE code example.
 
 ### Key Features and Functionalities
 
@@ -210,21 +190,9 @@ For the **Gaming Management API**, I used **SQLAlchemy** as the ORM (Object-Rela
 ## R6
 Design an entity relationship diagram (ERD) for this app’s database, and explain how the relations between the diagrammed models will aid the database design. 
 
-This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase.
-- PMG1003-2.1, PMG1003-7.3: EXPLAINS a plan for normalised database relations.
-12 to >10 pts
-HD
-Meets D, and the explanation includes comparisons to how AT LEAST ONE model or relations would look in other levels of normalisation than the one shown in the ERD.
-
-
 ## R7
 Explain the implemented models and their relationships, including how the relationships aid the database implementation.
 
-This should focus on the database implementation AFTER coding has begun, eg. during the project development phase.
-- CMP1001-7.2: DESCRIBES the project’s models in terms of the relationships they have with each other.
-6 to >5 pts
-HD
-Meets D, and includes appropriate code examples supporting the descriptions.
 ### Models and relationship
 1. **User Model**
 - Code Example:
@@ -371,16 +339,12 @@ class Achievement(db.Model):
 
 ## R8
 Explain how to use this application’s API endpoints. Each endpoint should be explained, including the following data for each endpoint:
+- HTTP verb
+- Path or route
+- Any required body or header data
+- Response
 
-HTTP verb
-Path or route
-Any required body or header data
-Response
-- CMP1001-1.4: IDENTIFY AND DESCRIBE the application’s API endpoints.
-6 to >5 pts
-HD
-Meets D, applied to ALL of the application’s API endpoints.
-### Auth/User API Endpoints Documentation
+### Auth/User API Endpoints
 1. **Register**
 - **HTTP Verb**: `POST`
 - **Path/Route**: `/auth/register`
@@ -441,7 +405,7 @@ Meets D, applied to ALL of the application’s API endpoints.
 - **HTTP Verb**: `GET`
 - **Path/Route**: `/auth/users`
 - **Required Header**s:
-  - `Authorisation: Bearer <access_token>` // JWT token for authentication
+  - `Authorisation: <access_token>` // JWT token for authentication
 - **Response**:
   - **Success**:
   ```json
@@ -464,7 +428,7 @@ Meets D, applied to ALL of the application’s API endpoints.
 - **HTTP Verb**: `GET`
 - **Path/Route**: `/auth/users/<int:id>`
 - **Required Headers**:
-  - `Authorisation: Bearer <access_token>` // JWT token for authentication
+  - `Authorisation: <access_token>` // JWT token for authentication
 - **Response**:
   - **Success**:
   ```json
@@ -487,7 +451,7 @@ Meets D, applied to ALL of the application’s API endpoints.
 - **HTTP Verb**: `PUT` or `PATCH`
 - **Path/Route**: `/auth/users/<int:id>`
 - **Required Headers**:
-`Authorization: Bearer <access_token>` // JWT token for authentication
+`Authorisation: <access_token>` // JWT token for authentication
 - **Required Body Data**:
 ```json
 {
@@ -518,7 +482,7 @@ Meets D, applied to ALL of the application’s API endpoints.
 - **HTTP Verb**: `DELETE`
 - **Path/Route**: `/auth/users/<int:id>`
 - **Required Headers**:
-`Authorization: Bearer <access_token>` // JWT token for authentication
+`Authorisation: <access_token>` // JWT token for authentication
 - **Response**:
   - **Success**:
   ```json
@@ -535,3 +499,870 @@ Meets D, applied to ALL of the application’s API endpoints.
   ```
   **Status Code**: `404 Not Found` 
 
+#### Explanation of Each Endpoint
+
+1. **Create User (Register)**: Allows new users to register by providing their name, email, and password. A successful registration returns the user’s details with a 201 status code.
+
+2. **Login User**: Authenticates users by verifying their email and password, returning a JWT access token upon successful login with a 200 status code.
+
+3. **Get All Users**: Retrieves a list of all registered users from the database, accessible only to authenticated users. It returns user data with a 200 status code.
+
+4. **Get Specific User**: Allows authenticated users to fetch details of a specific user by their ID. A successful request returns the user details with a 200 status code, while a 404 status indicates the user is not found.
+
+5. **Update User**: Enables authenticated users to update their account information such as name, email, or password using their ID. Successful updates return the updated user details with a 200 status code.
+
+6. **Delete User**: Allows authenticated users to delete their account using their ID. A successful deletion returns a confirmation message with a 200 status code, and a 404 status is returned if the user is not found.
+
+### Game API Endpoints
+1. **Create Game**
+- **HTTP Verb**: `POST`
+- **Path/Route**: `/games`
+- **Required Headers**:
+  - `Authorisation: <access_token>`  // JWT token for authentication
+- **Required Body Data**:
+  ```json
+  {
+    "title": "string",              // Required: Title of the game
+    "genre_id": "integer",         // Required: ID of the genre (must exist in genres table)
+    "developer_id": "integer"      // Required: ID of the developer (must exist in developers table)
+  }
+  ```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "title": "Fortnite",
+    "genre_id": 1,
+    "developer_id": 1
+  }
+  ```
+  **Status Code**: `201 Created`
+
+  - **Error**:
+  ```json
+  {
+    "message": "Genre not found"
+  }
+  ```
+  - **Status Code**: `404 Not Found`
+
+
+2. **Get All Games**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/games`
+- **Response**:
+  - **Success**:
+  ```json
+  [
+    {
+      "id": 1,
+      "title": "Fortnite",
+      "genre_id": 1,
+      "developer_id": 1
+    },
+    {
+      "id": 2,
+      "title": "Overwatch",
+      "genre_id": 2,
+      "developer_id": 2
+    }
+  ]
+  ```
+  **Status Code**: `200 OK`
+
+3. **Get Specific Game**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/games/<int:id>`
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "title": "Fortnite",
+    "genre_id": 1,
+    "developer_id": 1
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Game not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+4. **Update Game**
+- **HTTP Verb**: `PUT` or `PATCH`
+- **Path/Route:** `/games/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Required Body Data**:
+```json
+{
+  "title": "string",              // Optional: New title for the game
+  "genre_id": "integer",         // Optional: New genre ID (if changing genre)
+  "developer_id": "integer"      // Optional: New developer ID (if changing developer)
+}
+```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "title": "Updated Fortnite",
+    "genre_id": 1,
+    "developer_id": 1
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Game not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+5. **Delete Game**
+- **HTTP Verb**: `DELETE`
+- **Path/Route**: `/games/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "message": "Game deleted successfully"
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Game not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+#### Explanation of Each Endpoint
+
+1. **Create Game**: Allows authenticated users to add a new game to the database by specifying the title, genre ID, and developer ID. A successful creation returns the game's details with a 201 status code.
+
+2. **Get All Games**: Retrieves a list of all games in the database, returning the information with a 200 status code. This endpoint is accessible to both authenticated and unauthenticated users.
+
+3. **Get Specific Game**: Allows users to fetch details of a game by its ID. A successful response returns the game details with a 200 status code, while a 404 status indicates the game is not found.
+
+4. **Update Game**: Permits authenticated users to modify a game's details such as title, genre ID, or developer ID using its ID. Successful updates return the updated game details with a 200 status code.
+
+5. **Delete Game**: Allows authenticated users to remove a game by its ID. A successful deletion returns a confirmation message with a 200 status code, whereas a 404 status indicates the game is not found.
+
+
+### Session API Endpoints
+1. **Create Session**
+
+- **HTTP Verb**: `POST`
+- **Path/Route**: `/sessions`
+- **Required Headers**:
+  - `Authorisation: <access_token>`  // JWT token for authentication
+- **Required Body Data**:
+  ```json
+  {
+    "start_time": "string",  // Required: Start time of the session (e.g., "2024-09-28T10:00:00Z")
+    "game_id": "integer",     // Required: ID of the game being played
+    "end_time": "string"      // Optional: End time of the session
+  }
+  ```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "start_time": "2024-09-28T10:00:00Z",
+    "end_time": null,
+    "user_id": 1,
+    "game_id": 2
+  }
+  ```
+
+  **Status Code**: `201 Created`
+  - **Error**:
+  ```json
+  {
+    "message": "Game not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+2. **Get All Sessions**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/sessions`
+- **Required Headers**:
+`Authorisation:<access_token>` // JWT token for authentication
+- **Response**:
+  - **Success**:
+  ```json
+  [
+    {
+      "id": 1,
+      "start_time": "2024-09-28T10:00:00Z",
+      "end_time": null,
+      "user_id": 1,
+      "game_id": 2
+    },
+    {
+      "id": 2,
+      "start_time": "2024-09-28T11:00:00Z",
+      "end_time": "2024-09-28T11:30:00Z",
+      "user_id": 1,
+      "game_id": 3
+    }
+  ]
+  ```
+  **Status Code**: `200 OK`
+
+3. **Get Specific Session**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/sessions/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "start_time": "2024-09-28T10:00:00Z",
+    "end_time": null,
+    "user_id": 1,
+    "game_id": 2
+  }
+  ```
+  **Status Code**: `200 OK`
+
+  - **Error**:
+  ```json
+  {
+    "message": "Session not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+4. **Update Session**
+- **HTTP Verb**: `PUT` or `PATCH`
+- **Path/Route**: `/sessions/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token`> // JWT token for authentication
+- **Required Body Data**:
+```json
+{
+  "end_time": "string"       // Optional: End time of the session
+}
+```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "start_time": "2024-09-28T10:00:00Z",
+    "end_time": "2024-09-28T11:30:00Z",
+    "user_id": 1,
+    "game_id": 2
+  }
+  ```
+  **Status Code**: `200 OK`
+
+  - **Error**:
+  ```json
+  {
+    "message": "Session not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+5. **Delete Session**
+- **HTTP Verb**: `DELETE`
+- **Path/Route**: `/sessions/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "message": "Session deleted successfully"
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Session not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+#### Explanation of Each Endpoint
+
+1. **Create Session**: Allows authenticated users to start a new gaming session by providing the start time and game ID. Optionally, an end time can be specified. A successful creation returns the session details with a 201 status code.
+
+2. **Get All Sessions**: Retrieves a list of all sessions associated with the authenticated user, returning the information with a 200 status code.
+
+3. **Get Specific Session**: Allows authenticated users to fetch details of a specific session by its ID. A successful response returns the session details with a 200 status code, while a 404 status indicates the session is not found.
+
+4. **Update Session**: Permits authenticated users to update a session’s end time using its ID. Successful updates return the updated session details with a 200 status code.
+
+5. **Delete Session**: Allows authenticated users to delete a session by its ID. A successful deletion returns a confirmation message with a 200 status code, and a 404 status is returned if the session is not found.
+
+
+### Score API Endpoints
+1. **Create Score**
+- **HTTP Verb**: `POST`
+- **Path/Route**: `/scores`
+- **Required Headers**:
+  - `Authorisation: <access_token>`  // JWT token for authentication
+- **Required Body Data**:
+  ```json
+  {
+    "value": "integer",        // Required: The score value achieved by the user
+    "game_id": "integer"      // Required: The ID of the game associated with the score
+  }
+  ```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "value": 1500,
+    "user_id": 1,
+    "game_id": 2
+  }
+  ```
+  **Status Code**: `201 Created`
+  - **Error**:
+  ```json
+  {
+    "message": "Game not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+2. **Get All Scores**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/scores`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Response**:
+  - **Success**:
+  ```json
+  [
+    {
+      "id": 1,
+      "value": 1500,
+      "user_id": 1,
+      "game_id": 2
+    },
+    {
+      "id": 2,
+      "value": 2000,
+      "user_id": 1,
+      "game_id": 3
+    }
+  ]
+  ```
+  **Status Code**: `200 OK`
+
+3. **Get Specific Score**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/scores/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "value": 1500,
+    "user_id": 1,
+    "game_id": 2
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Score not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+4. **Update Score**
+- **HTTP Verb**: `PUT` or `PATCH`
+- **Path/Route**: `/scores/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Required Body Data**:
+```json
+{
+  "value": "integer"         // Required: The new score value achieved by the user
+}
+```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "value": 2000,
+    "user_id": 1,
+    "game_id": 2
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Score not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+5. **Delete Score**
+- **HTTP Verb**: `DELETE`
+- **Path/Route**: `/scores/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "message": "Score deleted successfully"
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Score not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+#### Explanation of Each Endpoint
+
+1. **Create Score**: Allows authenticated users to record a new score by providing the score value and associated game ID. A successful creation returns the score details with a 201 status code.
+
+2. **Get All Scores**: Retrieves a list of all scores associated with the authenticated user, returning the information with a 200 status code.
+
+3. **Get Specific Score**: Allows authenticated users to fetch details of a specific score by its ID. A successful response returns the score details with a 200 status code, while a 404 status indicates the score is not found.
+
+4. **Update Score**: Permits authenticated users to update a score’s value using its ID. Successful updates return the updated score details with a 200 status code.
+
+5. **Delete Score**: Allows authenticated users to delete a score by its ID. A successful deletion returns a confirmation message with a 200 status code, and a 404 status is returned if the score is not found.
+
+### Achievement API Endpoints
+
+1. **Create Achievement**
+- **HTTP Verb**: `POST`
+- **Path/Route**: `/achievements`
+- **Required Headers**:
+  - `Authorisation: <access_token>`  // JWT token for authentication
+- **Required Body Data**:
+  ```json
+  {
+    "name": "string",         // Required: Name of the achievement
+    "description": "string",  // Required: Description of the achievement
+    "user_id": "integer",     // Required: ID of the user earning the achievement
+    "game_id": "integer"      // Required: ID of the game associated with the achievement
+  }
+  ```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "name": "First Victory",
+    "description": "Achieved your first win",
+    "user_id": 1,
+    "game_id": 2
+  }
+  ```
+  **Status Code**: `201 Created`
+  - **Error**:
+  ```json
+  {
+    "message": "User or game not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+2. **Get All Achievements**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/achievements`
+- **Response**:
+  - **Success**:
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "First Victory",
+      "description": "Achieved your first win",
+      "user_id": 1,
+      "game_id": 2
+    },
+    {
+      "id": 2,
+      "name": "Veteran Player",
+      "description": "Played 100 matches",
+      "user_id": 1,
+      "game_id": 3
+    }
+  ]
+  ```
+  **Status Code**: `200 OK`
+
+3. **Get Specific Achievement**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/achievements/<int:id>`
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "name": "First Victory",
+    "description": "Achieved your first win",
+    "user_id": 1,
+    "game_id": 2
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Achievement not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+4. **Update Achievement**
+- **HTTP Verb**: `PUT` or `PATCH`
+- **Path/Route**: `/achievements/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Required Body Data**:
+```json
+{
+  "name": "string",         // Optional: New name of the achievement
+  "description": "string"   // Optional: New description of the achievement
+}
+```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "name": "Conqueror",
+    "description": "Achieved your first win",
+    "user_id": 1,
+    "game_id": 2
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Achievement not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+5. **Delete Achievement**
+- **HTTP Verb**: `DELETE`
+- **Path/Route**: `/achievements/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "message": "Achievement deleted successfully"
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Achievement not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+#### Explanation of Each Endpoint
+
+1. **Create Achievement**: Allows authenticated users to create a new achievement by providing the name, description, user ID, and game ID. A successful creation returns the achievement details with a 201 status code.
+
+2. **Get All Achievements**: Retrieves a list of all achievements in the database, returning the information with a 200 status code. This endpoint is accessible to all users.
+
+3. **Get Specific Achievement**: Allows users to fetch details of a specific achievement by its ID. A successful response returns the achievement details with a 200 status code, while a 404 status indicates the achievement is not found.
+
+4. **Update Achievement**: Permits authenticated users to update an achievement’s details, such as name or description, using its ID. Successful updates return the updated achievement details with a 200 status code.
+
+5. **Delete Achievement**: Allows authenticated users to delete an achievement by its ID. A successful deletion returns a confirmation message with a 200 status code, and a 404 status is returned if the achievement is not found.
+
+
+###  Developer API Endpoints
+1. **Create Developer**
+- **HTTP Verb**: `POST`
+- **Path/Route**: `/developers`
+- **Required Headers**:
+  - `Authorization: Bearer <access_token>`  // JWT token for authentication
+- **Required Body Data**:
+  ```json
+  {
+    "name": "string"  // Required: Name of the developer
+  }
+  ```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "name": "Epic Games"
+  }
+  ```
+  **Status Code**: `201 Created`
+  - **Error**:
+  ```json
+  {
+    "message": "Developer already exists"
+  }
+  ```
+  **Status Code**: `400 Bad Request`
+
+2. **Get All Developers**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/developers`
+- **Response:**
+  - **Success**:
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "Epic Games"
+    },
+    {
+      "id": 2,
+      "name": "Blizzard Entertainment"
+    }
+  ]
+  ```
+  **Status Code**: `200 OK`
+
+3. **Get Specific Developer**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/developers/<int:id>`
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "name": "Epic Games"
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Developer not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+4. **Update Developer**
+- **HTTP Verb**: `PUT` or `PATCH`
+- **Path/Route**: `/developers/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Required Body Data**:
+```json
+{
+  "name": "string"  // Optional: New name for the developer
+}
+```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "name": "Epic Games Updated"
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Developer not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+5. **Delete Developer**
+- **HTTP Verb**: `DELETE`
+- **Path/Route**: `/developers/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "message": "Developer deleted successfully"
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Developer not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+#### Explanation of Each Endpoint:
+
+1. **Create Developer**: This endpoint allows authenticated users to create a new developer. The request requires the developer's name. Successful creation returns the new developer's data with a 201 status code.
+
+2. **Get All Developers**: This endpoint retrieves and returns a list of all developers. Access to this endpoint is open, and it returns data with a 200 OK status code.
+
+3. **Get Specific Developer**: This endpoint allows users to retrieve a developer by ID. It returns detailed information about the developer or a 404 error if the developer is not found.
+
+4. **Update Developer**: This endpoint allows authenticated users to update the information of a specific developer. Users can modify the developer's name, and successful updates return the updated data. If the developer is not found, a 404 status code is returned.
+
+5. **Delete Developer**: This endpoint allows authenticated users to delete a specific developer. Upon successful deletion, it returns a success message. If the developer does not exist, a 404 error message is returned.
+
+
+### Genre API Endpoints
+1. **Create Genre**
+- **HTTP Verb**: `POST`
+- **Path/Route**: `/genres`
+- **Required Headers**:
+  - `Authorisation: <access_token>`  // JWT token for authentication
+- **Required Body Data**:
+  ```json
+  {
+    "name": "string"  // Required: Name of the genre
+  }
+  ```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "name": "Action"
+  }
+  ```
+  **Status Code**: `201 Created`
+  - **Error**:
+  ```json
+  {
+    "message": "Genre already exists"
+  }
+  ```
+  **Status Code**: `400 Bad Request`
+
+2. **Get All Genres**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/genres`
+- **Response**:
+  - **Success**:
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "Action"
+    },
+    {
+      "id": 2,
+      "name": "Adventure"
+    }
+  ]
+  ```
+  **Status Code**: `200 OK`
+
+3. **Get Specific Genre**
+- **HTTP Verb**: `GET`
+- **Path/Route**: `/genres/<int:id>`
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "name": "Action"
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Genre not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+4. **Update Genre**
+- **HTTP Verb**: `PUT` or `PATCH`
+- **Path/Route**: `/genres/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Required Body Data**:
+```json
+{
+  "name": "string"  // Optional: New name for the genre
+}
+```
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "id": 1,
+    "name": "Action - Updated"
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Genre not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+5. **Delete Genre**
+- **HTTP Verb**: `DELETE`
+- **Path/Route**: `/genres/<int:id>`
+- **Required Headers**:
+`Authorisation: <access_token>` // JWT token for authentication
+- **Response**:
+  - **Success**:
+  ```json
+  {
+    "message": "Genre deleted successfully"
+  }
+  ```
+  **Status Code**: `200 OK`
+  - **Error**:
+  ```json
+  {
+    "message": "Genre not found"
+  }
+  ```
+  **Status Code**: `404 Not Found`
+
+#### Explanation of Each Endpoint:
+
+1. **Create Genre**: This endpoint allows authenticated users to create a new genre. Users need to provide the genre name in the request body, and successful creation returns the new genre’s data with a 201 status code.
+
+2. **Get All Genres**: This endpoint fetches all genres available in the database. The response returns a list of genres with a 200 status code, accessible to all users without authentication.
+
+3. **Get Specific Genre**: Allows users to retrieve details of a specific genre using its ID. Success returns the genre details, while a 404 error indicates it was not found.
+
+4. **Update Genre**: This endpoint, available to authenticated users, allows updating a genre's name using its ID. A successful update returns the updated genre details with a 200 status code.
+
+5. **Delete Genre**: Authenticated users can delete a genre by its ID. Success returns a confirmation message with a 200 status code, and a 404 error is returned if the genre does not exist.
