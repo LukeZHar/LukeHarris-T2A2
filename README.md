@@ -47,9 +47,9 @@ I used **Trello** as my task management tool.
 2. **Task Cards**:
 Each task card details:
    - **Title**: A description of the task.
-   - **Description**: Detailed information about the task.
    - **Due Dates**: Each card had due dates.
    - **Checklists**: Checklists were included to break down subtasks.
+   - **priority**: Set priority (High, Medium, Low)
    
 3. **Assignment of Tasks**:
    - I would select tasks from the **Coming-up** and move them to the **To Do** list. Based on the priority I had set.
