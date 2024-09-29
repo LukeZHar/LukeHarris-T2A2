@@ -9,15 +9,15 @@ achievement_controller = Blueprint("achievement_controller", __name__)
 @achievement_controller.route("/achievements", methods=["POST"])
 @jwt_required()  # Ensure the user is authenticated to create an achievement
 def create_achievement():
-    """
-    Create a new achievement.
-
-    Expects:
-        - JSON payload with 'name', 'description', 'user_id', and 'game_id'.
     
-    Returns:
-        - JSON representation of the newly created achievement.
-    """
+    # Create a new achievement.
+
+    # Expects:
+    #     - JSON payload with 'name', 'description', 'user_id', and 'game_id'.
+    
+    # Returns:
+    #     - JSON representation of the newly created achievement.
+    
     body = request.json  # Get JSON payload from the request
 
     # Create a new achievement instance
@@ -37,28 +37,28 @@ def create_achievement():
 
 @achievement_controller.route("/achievements", methods=["GET"])
 def get_achievements():
-    """
-    Retrieve all achievements.
+   
+    # Retrieve all achievements.
 
-    Returns:
-        - JSON list of all achievements in the database.
-    """
+    # Returns:
+    #     - JSON list of all achievements in the database.
+    
     achievements = Achievement.query.all()  # Retrieve all achievements from the database
     return achievements_schema.jsonify(achievements)  # Return the list of achievements
 
 
 @achievement_controller.route("/achievements/<int:id>", methods=["GET"])
 def get_achievement(id):
-    """
-    Retrieve a specific achievement by ID.
+    
+    # Retrieve a specific achievement by ID.
 
-    Arguments:
-        - id: The ID of the achievement to retrieve.
+    # Arguments:
+    #     - id: The ID of the achievement to retrieve.
 
-    Returns:
-        - JSON representation of the achievement if found.
-        - Error message if the achievement is not found.
-    """
+    # Returns:
+    #     - JSON representation of the achievement if found.
+    #     - Error message if the achievement is not found.
+   
     achievement = Achievement.query.get(id)  # Retrieve achievement by ID
 
     if not achievement:
@@ -70,19 +70,19 @@ def get_achievement(id):
 @achievement_controller.route("/achievements/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()  # Ensure the user is authenticated to update an achievement
 def update_achievement(id):
-    """
-    Update an existing achievement's information.
+    
+    # Update an existing achievement's information.
 
-    Arguments:
-        - id: The ID of the achievement to update.
+    # Arguments:
+    #     - id: The ID of the achievement to update.
 
-    Expects:
-        - JSON payload with fields to update, such as 'name' or 'description'.
+    # Expects:
+    #     - JSON payload with fields to update, such as 'name' or 'description'.
 
-    Returns:
-        - JSON representation of the updated achievement if successful.
-        - Error message if the achievement is not found.
-    """
+    # Returns:
+    #     - JSON representation of the updated achievement if successful.
+    #     - Error message if the achievement is not found.
+    
     achievement = Achievement.query.get(id)  # Retrieve the achievement by ID
 
     if not achievement:
@@ -105,15 +105,15 @@ def update_achievement(id):
 @achievement_controller.route("/achievements/<int:id>", methods=["DELETE"])
 @jwt_required()  # Ensure the user is authenticated to delete an achievement
 def delete_achievement(id):
-    """
-    Delete an achievement by its ID.
+    
+    # Delete an achievement by its ID.
 
-    Arguments:
-        - id: The ID of the achievement to delete.
+    # Arguments:
+    #     - id: The ID of the achievement to delete.
 
-    Returns:
-        - Success message if deleted, or error message if not found.
-    """
+    # Returns:
+    #     - Success message if deleted, or error message if not found.
+   
     achievement = Achievement.query.get(id)  # Retrieve the achievement by ID
 
     if not achievement:

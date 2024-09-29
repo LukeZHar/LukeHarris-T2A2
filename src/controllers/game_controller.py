@@ -11,16 +11,16 @@ game_controller = Blueprint("game_controller", __name__)
 @game_controller.route("/games", methods=["POST"])
 @jwt_required()  # Ensure the user is authenticated to create a game
 def create_game():
-    """
-    Create a new game.
-
-    Expects:
-        - JSON payload with 'title', 'genre_id', and 'developer_id'.
     
-    Returns:
-        - JSON representation of the newly created game.
-        - Error message if genre or developer does not exist.
-    """
+    # Create a new game.
+
+    # Expects:
+    #     - JSON payload with 'title', 'genre_id', and 'developer_id'.
+    
+    # Returns:
+    #     - JSON representation of the newly created game.
+    #     - Error message if genre or developer does not exist.
+   
     body = request.json  # Get JSON payload from the request
 
     # Validate existence of genre and developer
@@ -53,28 +53,28 @@ def create_game():
 
 @game_controller.route("/games", methods=["GET"])
 def get_games():
-    """
-    Retrieve all games.
+    
+    # Retrieve all games.
 
-    Returns:
-        - JSON list of all games in the database.
-    """
+    # Returns:
+    #     - JSON list of all games in the database.
+    
     games = Game.query.all()  # Retrieve all games from the database
     return games_schema.jsonify(games)  # Return the list of games
 
 
 @game_controller.route("/games/<int:id>", methods=["GET"])
 def get_game(id):
-    """
-    Retrieve a specific game by ID.
+    
+    # Retrieve a specific game by ID.
 
-    Arguments:
-        - id: The ID of the game to retrieve.
+    # Arguments:
+    #     - id: The ID of the game to retrieve.
 
-    Returns:
-        - JSON representation of the game if found.
-        - Error message if the game is not found.
-    """
+    # Returns:
+    #     - JSON representation of the game if found.
+    #     - Error message if the game is not found.
+    
     game = Game.query.get(id)  # Retrieve game by ID
 
     if not game:
@@ -86,19 +86,19 @@ def get_game(id):
 @game_controller.route("/games/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()  # Ensure the user is authenticated to update a game
 def update_game(id):
-    """
-    Update an existing game's information.
+    
+    # Update an existing game's information.
 
-    Arguments:
-        - id: The ID of the game to update.
+    # Arguments:
+    #     - id: The ID of the game to update.
 
-    Expects:
-        - JSON payload with fields to update such as 'title', 'genre_id', or 'developer_id'.
+    # Expects:
+    #     - JSON payload with fields to update such as 'title', 'genre_id', or 'developer_id'.
 
-    Returns:
-        - JSON representation of the updated game if successful.
-        - Error message if game is not found.
-    """
+    # Returns:
+    #     - JSON representation of the updated game if successful.
+    #     - Error message if game is not found.
+    
     game = Game.query.get(id)  # Retrieve the game by ID
 
     if not game:
@@ -123,15 +123,15 @@ def update_game(id):
 @game_controller.route("/games/<int:id>", methods=["DELETE"])
 @jwt_required()  # Ensure the user is authenticated to delete a game
 def delete_game(id):
-    """
-    Delete a game by its ID.
+    
+    # Delete a game by its ID.
 
-    Arguments:
-        - id: The ID of the game to delete.
+    # Arguments:
+    #     - id: The ID of the game to delete.
 
-    Returns:
-        - Success message if deleted, or error message if not found.
-    """
+    # Returns:
+    #     - Success message if deleted, or error message if not found.
+    
     game = Game.query.get(id)  # Retrieve the game by ID
 
     if not game:

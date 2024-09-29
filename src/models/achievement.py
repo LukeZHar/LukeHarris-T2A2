@@ -2,16 +2,14 @@ from init import db, ma
 from marshmallow import fields
 
 class Achievement(db.Model):
-    """
-    This class represents the Achievement model in the database.
-
-    Attributes:
-    - id: The primary key of the achievement.
-    - name: The name of the achievement, which should be unique and not null.
-    - description: A brief description of the achievement.
-    - user_id: Foreign key linking to the User who earned the achievement.
-    - game_id: Foreign key linking to the Game where the achievement can be earned.
-    """
+    
+    # This class represents the Achievement model in the database.
+    # - id: The primary key of the achievement.
+    # - name: The name of the achievement, which should be unique and not null.
+    # - description: A brief description of the achievement.
+    # - user_id: Foreign key linking to the User who earned the achievement.
+    # - game_id: Foreign key linking to the Game where the achievement can be earned.
+    
     __tablename__ = "achievements"  # Specifies the table name in the database
 
     id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each achievement
@@ -28,11 +26,8 @@ class Achievement(db.Model):
 
 
 class AchievementSchema(ma.Schema):
-    """
-    Schema for serialising and deserialising Achievement objects.
-    
-    Includes nested relationships for associated user and game.
-    """
+
+    # Schema for serialising achievement records
     id = fields.Integer(dump_only=True)  # Only for output serialisation
     name = fields.String(required=True)  # Name of the achievement (required)
     description = fields.String(required=True)  # Description of the achievement (required)
@@ -41,9 +36,7 @@ class AchievementSchema(ma.Schema):
     game = fields.Nested("GameSchema", exclude=["achievements"])
 
     class Meta:
-        """
-        Meta class defining which fields are included in serialisation.
-        """
+        
         fields = ("id", "name", "description", "user", "game")  # Fields to include in serialisation
 
 # Instances of AchievementSchema for serialising single and multiple achievement records

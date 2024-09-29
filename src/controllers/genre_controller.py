@@ -9,15 +9,15 @@ genre_controller = Blueprint("genre_controller", __name__)
 @genre_controller.route("/genres", methods=["POST"])
 @jwt_required()  # Ensure the user is authenticated to create a genre
 def create_genre():
-    """
-    Create a new genre.
-
-    Expects:
-    - JSON payload with 'name'.
     
-    Returns:
-    - JSON representation of the newly created genre.
-    """
+    # Create a new genre.
+
+    # Expects:
+    # - JSON payload with 'name'.
+    
+    # Returns:
+    # - JSON representation of the newly created genre.
+    
     body = request.json  # Get JSON payload from the request
 
     # Create a new genre instance
@@ -34,28 +34,28 @@ def create_genre():
 
 @genre_controller.route("/genres", methods=["GET"])
 def get_genres():
-    """
-    Retrieve all genres.
+    
+    # Retrieve all genres.
 
-    Returns:
-    - JSON list of all genres in the database.
-    """
+    # Returns:
+    # - JSON list of all genres in the database.
+    
     genres = Genre.query.all()  # Retrieve all genres
     return genres_schema.jsonify(genres)  # Return the list of genres
 
 
 @genre_controller.route("/genres/<int:id>", methods=["GET"])
 def get_genre(id):
-    """
-    Retrieve a specific genre by ID.
+    
+    # Retrieve a specific genre by ID.
 
-    Arguments:
-    - id: The ID of the genre to retrieve.
+    # Arguments:
+    # - id: The ID of the genre to retrieve.
 
-    Returns:
-    - JSON representation of the genre if found.
-    - Error message if the genre is not found.
-    """
+    # Returns:
+    # - JSON representation of the genre if found.
+    # - Error message if the genre is not found.
+    
     genre = Genre.query.get(id)  # Retrieve genre by ID
     
     if not genre:
@@ -67,19 +67,19 @@ def get_genre(id):
 @genre_controller.route("/genres/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()  # Ensure the user is authenticated to update a genre
 def update_genre(id):
-    """
-    Update an existing genre by ID.
+   
+    # Update an existing genre by ID.
 
-    Arguments:
-    - id: The ID of the genre to update.
+    # Arguments:
+    # - id: The ID of the genre to update.
 
-    Expects:
-    - JSON payload with 'name' to update.
+    # Expects:
+    # - JSON payload with 'name' to update.
 
-    Returns:
-    - JSON representation of the updated genre if successful.
-    - Error message if genre not found.
-    """
+    # Returns:
+    # - JSON representation of the updated genre if successful.
+    # - Error message if genre not found.
+    
     genre = Genre.query.get(id)  # Retrieve the genre by ID
 
     if not genre:
@@ -100,15 +100,15 @@ def update_genre(id):
 @genre_controller.route("/genres/<int:id>", methods=["DELETE"])
 @jwt_required()  # Ensure the user is authenticated to delete a genre
 def delete_genre(id):
-    """
-    Delete a genre by its ID.
+    
+    # Delete a genre by its ID.
 
-    Arguments:
-    - id: The ID of the genre to delete.
+    # Arguments:
+    # - id: The ID of the genre to delete.
 
-    Returns:
-    - Success message if deleted, or error message if not found.
-    """
+    # Returns:
+    # - Success message if deleted, or error message if not found.
+    
     genre = Genre.query.get(id)  # Retrieve the genre by ID
 
     if not genre:

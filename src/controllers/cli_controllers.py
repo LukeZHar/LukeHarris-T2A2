@@ -11,35 +11,35 @@ db_commands = Blueprint("db_commands", __name__)
 
 @db_commands.cli.command("create")
 def create_db():
-    """
-    Create a new database. This involves creating all the tables that are
-    defined in the models. This is a one-time operation and should be run
-    only once, ideally when the application is first set up.
-    """
+    
+    # Create a new database. This involves creating all the tables that are
+    # defined in the models. This is a one-time operation and should be run
+    # only once, ideally when the application is first set up.
+    
     db.create_all()  # This creates all tables defined by your SQLAlchemy models
     print("Database created")
 
 @db_commands.cli.command("drop")
 def drop_db():
-    """
-    Drop all tables in the database.
-
-    This command is used to delete all of the tables in the database.
-    This is the opposite of the 'create' command, which creates the tables
-    in the first place.
     
-    This command is useful for starting over from scratch or for clearing
-    out old data that is no longer needed.
-    """
+    # Drop all tables in the database.
+
+    # This command is used to delete all of the tables in the database.
+    # This is the opposite of the 'create' command, which creates the tables
+    # in the first place.
+    
+    # This command is useful for starting over from scratch or for clearing
+    # out old data that is no longer needed.
+    
     db.drop_all()  # Call the `drop_all` method on the database
     print("Database dropped")  # Print a message letting the user know what happened
 
 @db_commands.cli.command("seed")
 def seed_db():
-    """
-    Populate the database with initial data. This is useful for setting up the database
-    for the first time or for filling it with some sample data for testing purposes.
-    """
+    
+    # Populate the database with initial data. This is useful for setting up the database
+    # for the first time or for filling it with some sample data for testing purposes.
+    
     
     # Create initial genres for the game database
     genres = [

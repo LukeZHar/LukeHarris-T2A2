@@ -17,16 +17,8 @@ from controllers.score_controller import score_controller
 from controllers.achievement_controller import achievement_controller
 
 def create_app():
-    """
-    Create and configure an instance of the Flask application.
-    This function sets up the necessary configurations, initialises
-    various components, and registers controllers.
-    """
-    # Instantiate the Flask application
+    # creates the Flask application
     app = Flask(__name__)
-
-    # Prevent JSON keys from being sorted alphabetically in responses
-    app.json.sort_keys = False
 
     # Configure the app's secret key from environment variables
     app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
@@ -85,4 +77,3 @@ def create_app():
     
     # Return the configured Flask app 
     return app
-app = create_app()

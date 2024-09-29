@@ -9,15 +9,15 @@ session_controller = Blueprint("session_controller", __name__)
 @session_controller.route("/sessions", methods=["POST"])
 @jwt_required()  # Ensure the user is authenticated to create a session
 def create_session():
-    """
-    Create a new gaming session.
+    
+    # Create a new gaming session.
 
-    Expects:
-    - JSON payload with 'start_time', 'game_id', and optionally 'end_time'.
+    # Expects:
+    # - JSON payload with 'start_time', 'game_id', and optionally 'end_time'.
 
-    Returns:
-    - JSON representation of the newly created session.
-    """
+    # Returns:
+    # - JSON representation of the newly created session.
+    
     body = request.json  # Get JSON payload from the request
 
     # Get the current user's ID from the JWT
@@ -41,12 +41,12 @@ def create_session():
 @session_controller.route("/sessions", methods=["GET"])
 @jwt_required()  # Ensure the user is authenticated to retrieve sessions
 def get_sessions():
-    """
-    Retrieve all gaming sessions for the authenticated user.
+    
+    # Retrieve all gaming sessions for the authenticated user.
 
-    Returns:
-    - JSON list of sessions tied to the current user.
-    """
+    # Returns:
+    # - JSON list of sessions tied to the current user.
+    
     user_id = get_jwt_identity()  # Get the current user's ID from the JWT
 
     # Query all sessions associated with the current user
@@ -58,16 +58,16 @@ def get_sessions():
 @session_controller.route("/sessions/<int:id>", methods=["GET"])
 @jwt_required()  # Ensure the user is authenticated to access this route
 def get_session(id):
-    """
-    Retrieve a specific gaming session by ID.
+    
+    # Retrieve a specific gaming session by ID.
 
-    Arguments:
-    - id: The ID of the session to retrieve.
+    # Arguments:
+    # - id: The ID of the session to retrieve.
 
-    Returns:
-    - JSON representation of the session if found.
-    - Error message if the session is not found or unauthorised.
-    """
+    # Returns:
+    # - JSON representation of the session if found.
+    # - Error message if the session is not found or unauthorised.
+    
     session = Session.query.get(id)  # Retrieve session by ID
 
     if not session:
@@ -83,15 +83,15 @@ def get_session(id):
 @session_controller.route("/sessions/<int:id>", methods=["DELETE"])
 @jwt_required()  # Ensure the user is authenticated to delete a session
 def delete_session(id):
-    """
-    Delete a gaming session by its ID.
+    #
+    # Delete a gaming session by its ID.
 
-    Arguments:
-    - id: The ID of the session to delete.
+    # Arguments:
+    # - id: The ID of the session to delete.
 
-    Returns:
-    - Success message if deleted, or error message if not found/unauthorized.
-    """
+    # Returns:
+    # - Success message if deleted, or error message if not found/unauthorized.
+    
     session = Session.query.get(id)  # Retrieve the session by ID
 
     if not session:

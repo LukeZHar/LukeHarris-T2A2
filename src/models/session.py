@@ -3,16 +3,14 @@ from marshmallow import fields
 from datetime import datetime
 
 class Session(db.Model):
-    """
-    This class represents the Session model in the database.
-
-    Attributes:
-    - id: The primary key of the session.
-    - start_time: The timestamp indicating when the session started.
-    - end_time: The timestamp indicating when the session ended. This can be null if the session is ongoing.
-    - user_id: Foreign key linking to the User who is participating in the session.
-    - game_id: Foreign key linking to the Game that the session is associated with.
-    """
+    
+    # This class represents the Session model in the database.
+    # - id: The primary key of the session.
+    # - start_time: The timestamp indicating when the session started.
+    # - end_time: The timestamp indicating when the session ended. This can be null if the session is ongoing.
+    # - user_id: Foreign key linking to the User who is participating in the session.
+    # - game_id: Foreign key linking to the Game that the session is associated with.
+    
     __tablename__ = "sessions"  # Specifies the table name in the database
 
     id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each session
@@ -34,11 +32,10 @@ class Session(db.Model):
     game = db.relationship("Game", back_populates="sessions")  # Game model relationship
 
 class SessionSchema(ma.Schema):
-    """
-    Schema for serialising and deserialising Session objects.
-    
-    Includes nested relationships for related data objects such as User and Game.
-    """
+
+    # Schema for serialising and deserialising Session objects.
+
+    # Fields to include in serialisation
     id = fields.Integer(dump_only=True)
     start_time = fields.DateTime(required=True)
     end_time = fields.DateTime()
@@ -48,9 +45,7 @@ class SessionSchema(ma.Schema):
     game = fields.Nested("GameSchema", exclude=["sessions"])
 
     class Meta:
-        """
-        Meta class to define the fields included in the serialized output.
-        """
+        
         fields = ("id", "start_time", "end_time", "user", "game")  # Fields to include in serialisation
 
 # Instances of SessionSchema for serialising single and multiple session data

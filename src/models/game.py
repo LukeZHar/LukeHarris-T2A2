@@ -2,15 +2,13 @@ from init import db, ma
 from marshmallow import fields
 
 class Game(db.Model):
-    """
-    This class represents the Game model in the database.
 
-    Attributes:
-    - id: The primary key of the game.
-    - title: The title of the game, which should be unique and not null.
-    - genre_id: Foreign key linking to the Genre of the game.
-    - developer_id: Foreign key linking to the Developer of the game.
-    """
+    # This class represents the Game model in the database.
+    # - id: The primary key of the game.
+    # - title: The title of the game, which should be unique and not null.
+    # - genre_id: Foreign key linking to the Genre of the game.
+    # - developer_id: Foreign key linking to the Developer of the game.
+
     __tablename__ = "games"  # Specifies the table name in the database
 
     id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each game
@@ -27,11 +25,8 @@ class Game(db.Model):
 
 
 class GameSchema(ma.Schema):
-    """
-    Schema for serialising and deserialising Game objects.
-    
-    Includes nested relationships for user-friendly data responses.
-    """
+
+    # Fields for serialising and deserialising Game objects
     id = fields.Integer(dump_only=True)
     title = fields.String(required=True)
     # Nested fields for related genre, developer, scores, and sessions, while avoiding recursive data exposure
@@ -43,9 +38,7 @@ class GameSchema(ma.Schema):
 
     # Meta class specifies the fields in serialisation
     class Meta:
-        """
-        Meta class defining which fields are included in serialisation.
-        """
+    
         fields = ("id", "title", "genre", "developer", "scores", "sessions", "achievements")
 
 # Instances of GameSchema for serialising single and multiple game entries

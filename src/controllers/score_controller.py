@@ -9,15 +9,15 @@ score_controller = Blueprint("score_controller", __name__)
 @score_controller.route("/scores", methods=["POST"])
 @jwt_required()  # Ensure the user is authenticated to create a score
 def create_score():
-    """
-    Create a new score for a specific game.
-
-    Expects:
-    - JSON payload with 'value' and 'game_id'.
     
-    Returns:
-    - JSON representation of the newly created score on success.
-    """
+    # Create a new score for a specific game.
+
+    # Expects:
+    # - JSON payload with 'value' and 'game_id'.
+    
+    # Returns:
+    # - JSON representation of the newly created score on success.
+    
     body = request.json  # Get JSON payload from the request
 
     # Get the current user's ID from the JWT
@@ -40,12 +40,12 @@ def create_score():
 @score_controller.route("/scores", methods=["GET"])
 @jwt_required()  # Ensure the user is authenticated to retrieve scores
 def get_scores():
-    """
-    Retrieve all scores for the authenticated user.
+    
+    # Retrieve all scores for the authenticated user.
 
-    Returns:
-    - JSON list of scores tied to the current user.
-    """
+    # Returns:
+    # - JSON list of scores tied to the current user.
+    
     user_id = get_jwt_identity()  # Get the current user's ID from the JWT
 
     # Query all scores associated with the current user
@@ -57,16 +57,16 @@ def get_scores():
 @score_controller.route("/scores/<int:id>", methods=["GET"])
 @jwt_required()  # Ensure the user is authenticated to access this route
 def get_score(id):
-    """
-    Retrieve a specific score by ID.
+    
+    # Retrieve a specific score by ID.
 
-    Arguments:
-    - id: The ID of the score to retrieve.
+    # Arguments:
+    # - id: The ID of the score to retrieve.
 
-    Returns:
-    - JSON representation of the score if found.
-    - Error message if the score is not found or unauthorized.
-    """
+    # Returns:
+    # - JSON representation of the score if found.
+    # - Error message if the score is not found or unauthorized.
+    
     score = Score.query.get(id)  # Retrieve score by ID
 
     if not score:
@@ -82,15 +82,15 @@ def get_score(id):
 @score_controller.route("/scores/<int:id>", methods=["DELETE"])
 @jwt_required()  # Ensure the user is authenticated to delete a score
 def delete_score(id):
-    """
-    Delete a score by its ID.
+    
+    # Delete a score by its ID.
 
-    Arguments:
-    - id: The ID of the score to delete.
+    # Arguments:
+    # - id: The ID of the score to delete.
 
-    Returns:
-    - Success message if deleted, or error message if not found/unauthorized.
-    """
+    # Returns:
+    # - Success message if deleted, or error message if not found/unauthorized.
+    
     score = Score.query.get(id)  # Retrieve the score by ID
 
     if not score:

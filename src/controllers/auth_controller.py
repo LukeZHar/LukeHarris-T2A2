@@ -10,13 +10,13 @@ auth = Blueprint("auth", __name__, url_prefix="/auth")
 
 @auth.route("/login", methods=["POST"])
 def login():
-    """
-    This route is used to log in existing users.
     
-    Expects JSON payload with 'email' and 'password'.
-    Validates credentials and returns a JWT token with a success message if correct.
-    Returns an error message with a 401 status code if credentials are incorrect.
-    """
+    # This route is used to log in existing users.
+    
+    # Expects JSON payload with 'email' and 'password'.
+    # Validates credentials and returns a JWT token with a success message if correct.
+    # Returns an error message with a 401 status code if credentials are incorrect.
+    
     email = request.json.get("email", None)
     password = request.json.get("password", None)
 
@@ -35,12 +35,12 @@ def login():
 
 @auth.route("/register", methods=["POST"])
 def register():
-    """
-    This route is used to create new users.
     
-    Validates the provided data and registers a new user.
-    Returns the new user data or an error message if invalid.
-    """
+    # This route is used to create new users.
+    
+    # Validates the provided data and registers a new user.
+    # Returns the new user data or an error message if invalid.
+    
     # Validate request data against User schema
     body = UserSchema().load(request.json)
 
@@ -73,10 +73,10 @@ def register():
 @auth.route("/users", methods=["GET"])
 @jwt_required()
 def get_users():
-    """
-    Returns a list of all users.
-    Requires JWT token for authentication.
-    """
+    
+    # Returns a list of all users.
+    # Requires JWT token for authentication.
+    
     users = User.query.all()
     return users_schema.jsonify(users)
 
@@ -84,11 +84,11 @@ def get_users():
 @auth.route("/users/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_user(id):
-    """
-    Updates an existing user by ID.
-    User must be authenticated and authorised.
-    Expects JSON payload with fields to be updated.
-    """
+    
+    # Updates an existing user by ID.
+    # User must be authenticated and authorised.
+    # Expects JSON payload with fields to be updated.
+   
     user = User.query.get(id)
 
     # Check if user exists

@@ -45,16 +45,47 @@ I used **Trello** as my task management tool.
      - **Done**: Completed tasks.
 
 2. **Task Cards**:
-Each task card details:
+Each task card had these details:
    - **Title**: A description of the task.
-   - **Due Dates**: Each card had due dates.
    - **Checklists**: Checklists were included to break down subtasks.
    - **priority**: Set priority (High, Medium, Low)
    
 3. **Assignment of Tasks**:
    - I would select tasks from the **Coming-up** and move them to the **To Do** list. Based on the priority I had set.
    - I updated the status of tasks by moving the cards from one list to another as i progressed through.
+----
+1. **Trello At the beginning**  
+![Trello At the beginning](./docs/trello/Trello%20day%201.png)
 
+2. **Trello at mid way point**  
+![Trello at mid way point](./docs/trello/trello-mid.png)
+
+3. **Trello Almost complete**  
+![Trello Almost complete](./docs/trello/Trello-almost.png)
+
+4. **Trello complete**  
+![Trello complete](./docs/trello/Trello-end.png)
+
+5. **Trello Readme**  
+![Trello Readme](./docs/trello/Readme-trello.png)
+
+6. **Trello database**  
+![Trello database](./docs/trello/database-trello.png)
+
+7. **Trello main**  
+![Trello main](./docs/trello/Main-trello.png)
+
+8. **Trello init**  
+![Trello init](./docs/trello/init-trello.png)
+
+9. **Trello models**  
+![Trello models](./docs/trello/models-trello.png)
+
+10. **Trello controllers**  
+![Trello controllers](./docs/trello/controllers-trello.png)
+
+11. **Trello ERD**  
+![Trello ERD](./docs/trello/erd-trello.png)
 
 ## R3
 - List and explain the third-party services, packages and dependencies used in this app.
@@ -189,6 +220,47 @@ For the **Gaming Management API**, I used **SQLAlchemy** as the ORM (Object-Rela
 
 ## R6
 Design an entity relationship diagram (ERD) for this app’s database, and explain how the relations between the diagrammed models will aid the database design. 
+### ERD
+1. **ERD I started with**  
+![Start](./docs/ERD/GameManagementAPI.png)
+2. **ERD I Finished with**  
+![Ended with](./docs/ERD/erd.png)
+
+### Legend/key notations
+- (**PK**) - **Primary key** - uniquely identifies records in the table.
+- (**FK**) - **Foreign key** - A field that establishes a link to the primary key in another table 
+- **One-to-many** - Represented by for example the user to score relationship 
+- **many-to-many** - Represented by for example the game to genre and developers 
+
+**Brief Explanation**
+1. **First Normal Form (1NF)**: 
+
+- Each table in the ERD contains values, meaning each column contains indivisible values. For example, the `User` table has separate columns for `id`, `name`, `email`, and `password`.
+- Every attribute contains only one value per record, ensuring there are no repeating groups.
+
+2. **Second Normal Form (2NF)**:
+
+- All non-key attributes are fully functionally dependent on the primary key. For example:
+  - In the `Score` model, the `value` attribute depends solely on the `id` primary key, ensuring that scores are directly tied to the specific score entry.
+- There are no partial dependencies; each non-key attribute relates directly to one primary key.
+
+3. **Third Normal Form (3NF)**:
+
+- The tables are designed to eliminate dependencies. For instance:
+  - The `Achievement` model holds only columns that depend directly on `id`, while relationships with `User` and `Game` ensure no indirect relationships exist.
+- Non-key attributes do not depend on other non-key attributes, maintaining clear lines of data ownership.
+
+### Comparison to Other Levels of Normalisation
+**First Normal Form (1NF)**: If the models were only in 1NF, they might look like a single large table combining all user data, scores, achievements, sessions, and games. This would lead to redundancy and make it difficult to manage.
+
+**Second Normal Form (2NF)**: A non-normalised approach might involve attributing scores and achievements directly to a user with mixed relationships, resulting in one large table where user information appears multiple times—leading to increased data redundancy and invalidation of data.
+
+**Example**: 
+Before Normalisation (Hypothetical 1NF):
+| id | name     | email           | score | achievement     | game_title     |
+|----|----------|------------------|-------|------------------|-----------------|
+| 1  | Alice    | alice@example.com| 1500  | First Victory    | Fortnite        |
+| 1  | Alice    | alice@example.com| 2000  | Master Explorer   | Overwatch    
 
 ## R7
 Explain the implemented models and their relationships, including how the relationships aid the database implementation.

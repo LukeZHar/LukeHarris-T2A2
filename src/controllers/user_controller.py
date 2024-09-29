@@ -9,16 +9,14 @@ user_controller = Blueprint("user_controller", __name__)
 @user_controller.route("/users/<int:id>", methods=["GET"])
 @jwt_required()  # Ensure the user is authenticated to access this route
 def get_user(id):
-    """
-    Retrieve details of a specific user by their ID.
+    
+    # Retrieve details of a specific user by their ID.
+    # - id: The ID of the user to retrieve.
 
-    Arguments:
-    - id: The ID of the user to retrieve.
-
-    Returns:
-    - JSON representation of the user if found.
-    - Error message if the user does not exist.
-    """
+    # Returns:
+    # - JSON representation of the user if found.
+    # - Error message if the user does not exist.
+    
     # Fetch the user from the database by ID
     user = User.query.get(id)
     
@@ -33,12 +31,13 @@ def get_user(id):
 @user_controller.route("/users", methods=["GET"])
 @jwt_required()  # Ensure the user is authenticated to access this route
 def get_all_users():
-    """
-    Retrieve a list of all users.
+    
+    # Retrieve a list of all users.
 
-    Returns:
-    - JSON list of all users in the database.
-    """
+    # Returns:
+    # - JSON list of all users in the database.
+
+    
     users = User.query.all()  # Retrieve all users
     return users_schema.jsonify(users)  # Return user data
 
@@ -46,18 +45,18 @@ def get_all_users():
 @user_controller.route("/users/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()  # Ensure the user is authenticated to access this route
 def update_user(id):
-    """
-    Update an existing user's information.
+    
+    # Update an existing user's information.
 
-    Arguments:
-    - id: The ID of the user to update.
+    # Arguments:
+    # - id: The ID of the user to update.
 
-    Expects a JSON payload with fields to update (name or email).
+    # Expects a JSON payload with fields to update (name or email).
 
-    Returns:
-    - Updated user data if successful.
-    - Error message if user not found or if unauthorised.
-    """
+    # Returns:
+    # - Updated user data if successful.
+    # - Error message if user not found or if unauthorised.
+    
     # Fetch the user from the database
     user = User.query.get(id)
 
@@ -90,15 +89,15 @@ def update_user(id):
 @user_controller.route("/users/<int:id>", methods=["DELETE"])
 @jwt_required()  # Ensure the user is authenticated to access this route
 def delete_user(id):
-    """
-    Delete a user by their ID.
+    
+    # Delete a user by their ID.
 
-    Arguments:
-    - id: The ID of the user to delete.
+    # Arguments:
+    # - id: The ID of the user to delete.
 
-    Returns:
-    - Success message on deletion or an error message if user not found.
-    """
+    # Returns:
+    # - Success message on deletion or an error message if user not found.
+    
     # Fetch the user from the database
     user = User.query.get(id)
 

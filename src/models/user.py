@@ -3,18 +3,16 @@ from marshmallow import fields, validate
 from marshmallow.validate import Regexp
 
 class User(db.Model):
-    """
-    This class represents the User model in the database.
-
-    Attributes:
-    - id: The primary key of the user.
-    - name: The name of the user.
-    - email: The email of the user.
-    - password: The password of the user.
-    - is_admin: Whether the user is an admin or not.
-    - achievements: Relationship to track the user's achievements.
-    - scores: Relationship to manage user scores in different games.
-    """
+    
+    # This class represents the User model in the database.
+    # - id: The primary key of the user.
+    # - name: The name of the user.
+    # - email: The email of the user.
+    # - password: The password of the user.
+    # - is_admin: Whether the user is an admin or not.
+    # - achievements: Relationship to track the user's achievements.
+    # - scores: Relationship to manage user scores in different games.
+    
     __tablename__ = "users"  # Table name in the database
 
     id = db.Column(db.Integer, primary_key=True)  # Primary key, unique ID for each user
@@ -29,10 +27,7 @@ class User(db.Model):
     sessions = db.relationship("Session", back_populates="user")  # Link to Session model
     
 class UserSchema(ma.Schema):
-    """
-    Schema for serialising and deserialising User objects.
-    Assists in converting complex data types like User objects into JSON.
-    """
+   
     # Fields
     #
     id = fields.Integer(dump_only=True)  # Only for output
@@ -50,10 +45,7 @@ class UserSchema(ma.Schema):
     sessions = fields.List(fields.Nested("SessionSchema", exclude=["user"]))
 
     class Meta:
-        """
-        Meta class specifies the fields in serialisation.
-        - Excludes password from the default output to ensure security.
-        """
+        
         fields = ("id", "name", "email", "password", "is_admin", "achievements", "scores", "sessions")
 
 # Schemas for users; excluding passwords for security
