@@ -33,7 +33,7 @@ def create_app():
 
     # Set the SQLAlchemy database URI, read from environment variables
     # This defines the database connection string used by SQLAlchemy
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
     
     # Initialise SQLAlchemy with the Flask app instance
     # This sets up the database connection and prepares models
@@ -85,3 +85,4 @@ def create_app():
     
     # Return the configured Flask app 
     return app
+app = create_app()

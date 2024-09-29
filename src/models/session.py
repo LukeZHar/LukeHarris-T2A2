@@ -18,7 +18,7 @@ class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each session
 
     # Start time of the session, cannot be null
-    start_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    start_time = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
     # End time of the session, can be null if the session is ongoing
     end_time = db.Column(db.DateTime)
@@ -39,6 +39,9 @@ class SessionSchema(ma.Schema):
     
     Includes nested relationships for related data objects such as User and Game.
     """
+    id = fields.Integer(dump_only=True)
+    start_time = fields.DateTime(required=True)
+    end_time = fields.DateTime()
 
     # Nested fields for associated user and game, avoiding unnecessary circular references
     user = fields.Nested("UserSchema", exclude=["sessions", "password"])

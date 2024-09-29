@@ -35,7 +35,9 @@ class ScoreSchema(ma.Schema):
     
     This schema includes nested relationships for user and game details.
     """
-    
+    id = fields.Integer(dump_only=True)
+    value = fields.Integer(required=True)
+    date_achieved = fields.DateTime(dump_only=True)  # Automatically set; not intended for input
     # Nested fields for related user and game, avoiding recursive serialisation issues
     user = fields.Nested("UserSchema", exclude=["scores", "password"])
     game = fields.Nested("GameSchema", exclude=["scores"])

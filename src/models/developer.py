@@ -20,12 +20,13 @@ class Developer(db.Model):
 
 class DeveloperSchema(ma.Schema):
     """
-    Schema for serializing and deserializing Developer objects.
+    Schema for serialising and deserialising Developer objects.
     
     Includes nested relationships for associated games.
     """
-    
-    # Nested fields for related games, avoiding recursive serialization
+    id = fields.Integer(dump_only=True)
+    name = fields.String(required=True)
+    # Nested fields for related games, avoiding recursive serialisation
     games = fields.List(fields.Nested("GameSchema", exclude=["developer"]))
 
     class Meta:

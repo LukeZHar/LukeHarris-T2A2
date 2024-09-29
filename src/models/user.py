@@ -1,5 +1,5 @@
 from init import db, ma
-from marshmallow import fields
+from marshmallow import fields, validate
 from marshmallow.validate import Regexp
 
 class User(db.Model):
@@ -33,25 +33,29 @@ class UserSchema(ma.Schema):
     Schema for serialising and deserialising User objects.
     Assists in converting complex data types like User objects into JSON.
     """
-
-    # Nested relationships, avoiding circular references by excluding user fields
-    achievements = fields.List(fields.Nested("AchievementSchema", exclude=["user"]))
-    scores = fields.List(fields.Nested("ScoreSchema", exclude=["user"]))
-    sessions = fields.List(fields.Nested("SessionSchema", exclude=["user"]))
-
+    # Fields
+    #
+    id = fields.Integer(dump_only=True)  # Only for output
+    name = fields.String(required=True, validate=[validate.Length(min=1)])
+    is_admin = fields.Boolean(dump_only=True)
+    password = fields.String(load_only=True, required=True, validate=[validate.Length(min=6)])
     # Ensures that the email field is in a valid format
     email = fields.String(
         required=True,
         validate=Regexp(r"^\S+@\S+\.\S+$", error="Invalid email format")
     )
+    # Nested relationships, avoiding circular references by excluding user fields
+    achievements = fields.List(fields.Nested("AchievementSchema", exclude=["user"]))
+    scores = fields.List(fields.Nested("ScoreSchema", exclude=["user"]))
+    sessions = fields.List(fields.Nested("SessionSchema", exclude=["user"]))
 
     class Meta:
         """
-        Meta class specifies the fields in serialization.
+        Meta class specifies the fields in serialisation.
         - Excludes password from the default output to ensure security.
         """
-        fields = ("id", "name", "email", "is_admin", "achievements", "scores", "sessions")
+        fields = ("id", "name", "email", "password", "is_admin", "achievements", "scores", "sessions")
 
 # Schemas for users; excluding passwords for security
-user_schema = UserSchema(exclude=["password"])  # Single user serialisation, password excluded
-users_schema = UserSchema(exclude=["password"], many=True)  # Multiple users serialisation, passwords excluded
+user_schema = UserSchema(exclude=("password",))  # Single user serialisation, password excluded
+users_schema = UserSchema(exclude=("password",), many=True)  # Multiple users serialisation, passwords excluded

@@ -4,9 +4,6 @@ from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 
-# Initialize the extensions
-# These are extension instances that will be initialised with the Flask application
-
 # SQLAlchemy instance for database management
 # It provides ORM capabilities to map classes to database tables
 db = SQLAlchemy()

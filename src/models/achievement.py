@@ -33,7 +33,9 @@ class AchievementSchema(ma.Schema):
     
     Includes nested relationships for associated user and game.
     """
-    
+    id = fields.Integer(dump_only=True)  # Only for output serialisation
+    name = fields.String(required=True)  # Name of the achievement (required)
+    description = fields.String(required=True)  # Description of the achievement (required)
     # Nested fields to include related user and game, avoiding recursive serialisation
     user = fields.Nested("UserSchema", exclude=["achievements", "password"])
     game = fields.Nested("GameSchema", exclude=["achievements"])

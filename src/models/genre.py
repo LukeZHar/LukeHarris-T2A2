@@ -14,7 +14,6 @@ class Genre(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)  # Unique identifier for each genre
     name = db.Column(db.String(80), nullable=False, unique=True)  # Genre name, unique and non-null
-    description = db.Column(db.String(255))  # Optional description of the genre
 
     # Relationship to associate games with this genre
     games = db.relationship("Game", back_populates="genre", lazy='dynamic')  # Games that belong to this genre
@@ -26,7 +25,8 @@ class GenreSchema(ma.Schema):
     
     This schema includes nested relationships for associated games.
     """
-    
+    id = fields.Integer(dump_only=True)
+    name = fields.String(required=True)
     # Excludes certain sensitive fields in nested representations to prevent recursive data exposure
     games = fields.List(fields.Nested("GameSchema", exclude=["genre"]))
 
@@ -34,7 +34,7 @@ class GenreSchema(ma.Schema):
         """
         Meta class defining which fields are included in serialisation.
         """
-        fields = ("id", "name", "description", "games")  # Fields to include in serialisation
+        fields = ("id", "name", "games")  # Fields to include in serialisation
 
 # Instances of GenreSchema for serialising single and multiple genre records
 genre_schema = GenreSchema()  # Single genre instance
